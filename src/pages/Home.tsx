@@ -1,31 +1,156 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import {
   ArrowUpRight,
   ArrowRight,
   Accessibility,
-  SlidersHorizontal,
-  Route,
-  MoveUpRight,
-  ShieldCheck,
-  MapPin,
   Check,
-  Heart,
-  ChevronRight,
+  MapPin,
+  Navigation,
+  Plus,
+  Flag,
+  ArrowDown,
 } from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Brand from "../components/Brand";
-import NavigationEnvironment from "../components/home/NavigationEnvironment";
-import PhonePortal from "../components/home/PhonePortal";
-import {
-  ProblemStory,
-  PersonalStory,
-  VisualStory,
-  CommunityDemo,
-} from "../components/home/ScrollStories";
+import { routes } from "../data/journey";
+import { routeDistance } from "../lib/routing";
 import type { ProfileId } from "../types/journey";
-let introHasPlayed = false;
-gsap.registerPlugin(ScrollTrigger);
+
+const project = (p: [number, number]) => [
+  76 + (p[0] + 94.21125) * 190000,
+  410 - (p[1] - 36.37148) * 180000,
+];
+function RoutePreview({ accessible }: { accessible: boolean }) {
+  const reduce = useReducedMotion();
+  const r = routes[accessible ? 1 : 0];
+  const points = r.coordinates.map(project);
+  return (
+    <svg
+      className="atlas-map"
+      viewBox="0 0 640 520"
+      role="img"
+      aria-label={
+        accessible
+          ? "Step-free route around the modeled stairs"
+          : "Shorter route through the modeled stair segment"
+      }
+    >
+      <rect width="640" height="520" fill="#eeeee7" />
+      <g fill="#e3e3da" stroke="#d8d9ce" strokeWidth="1">
+        {[105, 284, 475].flatMap((x) =>
+          [36, 177, 306, 440].map((y) => (
+            <rect
+              key={`${x}-${y}`}
+              x={x}
+              y={y}
+              width={x === 475 ? 115 : 130}
+              height={y === 440 ? 70 : 70}
+              rx="3"
+            />
+          )),
+        )}
+      </g>
+      <path
+        d="M0 410H640 M0 258H640 M0 144H640 M76 0V520 M280 0V520 M530 0V520"
+        stroke="#fafaf6"
+        strokeWidth="24"
+        fill="none"
+      />
+      <rect x="552" y="161" width="80" height="77" rx="12" fill="#d0dec8" />
+      <g fill="#767d73" fontFamily="Inter,sans-serif" fontSize="10">
+        <text x="302" y="402">
+          SW 2ND ST
+        </text>
+        <text x="120" y="249">
+          WEST CENTRAL AVE
+        </text>
+        <text x="310" y="135">
+          NW 2ND ST
+        </text>
+        <text x="536" y="287" transform="rotate(-90 536 287)">
+          MAIN ST
+        </text>
+        <text x="564" y="198">
+          CITY
+        </text>
+        <text x="564" y="213">
+          SQUARE
+        </text>
+        <text x="60" y="363" transform="rotate(-90 60 363)">
+          B STREET
+        </text>
+      </g>
+      <polyline
+        points={routes[0].coordinates
+          .map(project)
+          .map((p) => p.join(","))
+          .join(" ")}
+        fill="none"
+        stroke="#8c938b"
+        strokeWidth="3"
+        strokeDasharray="5 7"
+      />
+      <motion.polyline
+        key={r.id}
+        points={points.map((p) => p.join(",")).join(" ")}
+        fill="none"
+        stroke="#7355d5"
+        strokeWidth="7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ pathLength: reduce ? 1 : 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: reduce ? 0 : 0.8, ease: "easeInOut" }}
+      />
+      <circle
+        cx={points[0][0]}
+        cy={points[0][1]}
+        r="10"
+        fill="white"
+        stroke="#7355d5"
+        strokeWidth="4"
+      />
+      <g transform={`translate(${points.at(-1)![0]},${points.at(-1)![1]})`}>
+        <circle r="18" fill="#253c36" />
+        <path
+          d="M-4 8V-8L7-5V2L-4-1"
+          stroke="white"
+          strokeWidth="2"
+          fill="none"
+        />
+      </g>
+      <g transform="translate(280,329)">
+        <rect
+          x="-16"
+          y="-16"
+          width="32"
+          height="32"
+          rx="9"
+          fill="#fff8eb"
+          stroke="#e8b96f"
+        />
+        <path
+          d="M-8 6H-3V1H2V-4H8"
+          fill="none"
+          stroke="#9c6225"
+          strokeWidth="2"
+        />
+      </g>
+      <text x="302" y="333" fontSize="11" fill="#7b592c">
+        Stairs
+      </text>
+      <text x="292" y="435" fontSize="11" fill="#243d36">
+        Start here
+      </text>
+      <g transform="translate(590,52)">
+        <path d="M0-12L-6 7L0 4L6 7Z" fill="#253c36" />
+        <text y="-20" textAnchor="middle" fontSize="10" fill="#253c36">
+          N
+        </text>
+      </g>
+    </svg>
+  );
+}
 export default function Home({
   start,
   profile = "manual",
@@ -33,515 +158,336 @@ export default function Home({
 }: {
   start: () => void;
   profile?: ProfileId;
-  onProfile?: (id: ProfileId) => void;
+  onProfile?: (profile: ProfileId) => void;
 }) {
-  const root = useRef<HTMLDivElement>(null);
-  const phone = useRef<HTMLVideoElement>(null);
-  const [portal, setPortal] = useState<{
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-  } | null>(null);
-  const enter = () => {
-    if (portal) return;
-    if (matchMedia("(prefers-reduced-motion:reduce)").matches) {
-      start();
-      return;
-    }
-    const bounds = root.current
-      ?.querySelector(".phone-render")
-      ?.getBoundingClientRect();
-    const visible = bounds && bounds.top < innerHeight && bounds.bottom > 0;
-    setPortal(
-      visible
-        ? {
-            left: bounds.left + bounds.width * 0.35,
-            top: bounds.top + bounds.height * 0.2,
-            width: bounds.width * 0.34,
-            height: bounds.height * 0.59,
-          }
-        : {
-            left: innerWidth * 0.5 - 100,
-            top: innerHeight * 0.5 - 200,
-            width: 200,
-            height: 400,
-          },
-    );
+  const [accessible, setAccessible] = useState(true);
+  const reduced = useReducedMotion();
+  const reveal = {
+    initial: { opacity: reduced ? 1 : 0, y: reduced ? 0 : 24 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.12 },
+    transition: { duration: 0.55 },
   };
-  const [playing, setPlaying] = useState(true);
-  const [reduced, setReduced] = useState(
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReduced(query.matches);
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-  useEffect(() => {
-    const video = phone.current;
-    if (!video) return;
-    let inView = true,
-      active = true;
-    const sync = () => {
-      if (!active) return;
-      if (inView && playing && !document.hidden)
-        void video.play().catch(() => {});
-      else video.pause();
-    };
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        inView = entry.isIntersecting;
-        sync();
-      },
-      { threshold: 0.05 },
-    );
-    observer.observe(video);
-    document.addEventListener("visibilitychange", sync);
-    return () => {
-      active = false;
-      observer.disconnect();
-      document.removeEventListener("visibilitychange", sync);
-    };
-  }, [playing, reduced]);
-  useEffect(() => {
-    if (reduced) return;
-    let introFrame = 0;
-    const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>(".reveal").forEach((el) =>
-        gsap.from(el, {
-          y: 36,
-          opacity: 0,
-          duration: 0.9,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 92%", once: true },
-        }),
-      );
-      gsap.from(".mini-route", {
-        strokeDasharray: 1000,
-        strokeDashoffset: 1000,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".feature-visual",
-          start: "top 85%",
-          end: "center center",
-          scrub: 1,
-        },
-      });
-      gsap.from(".problem-detour", {
-        strokeDasharray: 1800,
-        strokeDashoffset: 1800,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".barrier-diagram",
-          start: "top 85%",
-          end: "center center",
-          scrub: 0.6,
-        },
-      });
-      gsap.to(".phone-scroll", {
-        rotationY: 16,
-        rotationZ: -5,
-        scale: 1.1,
-        y: 80,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.8,
-        },
-      });
-      gsap.fromTo(
-        ".visual-preview-frame",
-        { rotationY: -7, rotationZ: 3, y: 25 },
-        {
-          rotationY: 5,
-          rotationZ: -2,
-          y: -30,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".visual-story",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 0.9,
-          },
-        },
-      );
-      introFrame = requestAnimationFrame(() => {
-        if (introHasPlayed) return;
-        introHasPlayed = true;
-        ctx.add(() => {
-          gsap
-            .timeline({ defaults: { ease: "power4.out" } })
-            .from(
-              ".headline-word",
-              {
-                yPercent: 112,
-                rotateX: 18,
-                opacity: 0,
-                duration: 1.1,
-                stagger: 0.13,
-              },
-              0,
-            )
-            .from(
-              ".hero-copy>.eyebrow",
-              { opacity: 0, y: 12, duration: 0.65 },
-              0.1,
-            )
-            .from(
-              ".hero-copy>p,.hero-actions,.hero-caption",
-              { opacity: 0, y: 18, duration: 0.8, stagger: 0.12 },
-              0.4,
-            )
-            .from(
-              ".phone-intro",
-              { opacity: 0, y: 65, rotateZ: 8, scale: 0.86, duration: 1.35 },
-              0.16,
-            )
-            .from(
-              ".floating-badge",
-              { opacity: 0, y: 22, duration: 0.8, stagger: 0.15 },
-              0.85,
-            );
-        });
-      });
-    }, root);
-    return () => {
-      cancelAnimationFrame(introFrame);
-      ctx.revert();
-    };
-  }, [reduced]);
+  const previewRoute = routes[accessible ? 1 : 0];
   return (
-    <div
-      ref={root}
-      className={"home premium-home " + (portal ? "is-entering" : "")}
-    >
-      <a className="skip-link" href="#main-content">
+    <div className="atlas-home" id="top">
+      <a href="#main" className="atlas-skip">
         Skip to content
       </a>
-      <header className="site-header">
+      <header className="atlas-header">
         <Brand
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={() =>
+            window.scrollTo({
+              top: 0,
+              behavior: reduced ? "instant" : "smooth",
+            })
+          }
         />
         <nav aria-label="Main navigation">
-          <a href="#how">How it works</a>
-          <a href="#features">Our approach</a>
-          <a href="#community">Community</a>
+          <a href="#how">The experience</a>
+          <a href="#local">Our starting point</a>
+          <a href="#questions">Questions</a>
         </nav>
-        <button className="button small" onClick={enter} data-magnetic>
-          Open PathAble <ArrowUpRight size={16} />
+        <button className="atlas-link-button" onClick={start}>
+          Open PathAble <ArrowUpRight size={18} />
         </button>
       </header>
-      <main id="main-content" tabIndex={-1}>
-        <section className="hero">
-          <NavigationEnvironment />
-          <div className="hero-copy">
-            <div className="eyebrow">
-              <span className="live-dot" /> A BETTER WAY FORWARD
+      <main id="main">
+        <section className="atlas-hero">
+          <motion.div className="atlas-hero-copy" {...reveal}>
+            <div className="atlas-kicker">
+              <span /> BENTONVILLE, ARKANSAS
             </div>
-            <h1 aria-label="Navigation without barriers.">
-              {["Navigation", "without", "barriers."].map((word, i) => (
-                <span className="headline-line" aria-hidden="true" key={word}>
-                  <span className="headline-word">
-                    {word}
-                    {i === 2 && <i className="intro-cursor" />}
-                  </span>
-                </span>
-              ))}
+            <h1>
+              More freedom.
+              <br />
+              Fewer <em>barriers.</em>
             </h1>
             <p>
-              Discover routes designed around your mobility needs. Navigate with
-              greater confidence, clarity, and independence.
+              A route should fit the person taking it. Explore pathways around
+              your mobility needs, one city block at a time.
             </p>
-            <div className="hero-actions">
-              <button className="button" onClick={enter} data-magnetic>
-                Start navigating <ArrowUpRight size={19} />
-              </button>
-              <a className="text-link" href="#features">
-                Explore features <ArrowRight size={17} />
-              </a>
-            </div>
-            <div className="hero-caption">
-              <div className="people">
-                <span>♡</span>
-                <span>↗</span>
-                <span>✳</span>
-              </div>
+            <button className="atlas-primary" onClick={start}>
+              Start navigating <ArrowUpRight size={21} />
+            </button>
+            <a className="atlas-explore" href="#how">
+              See the difference <ArrowDown size={16} />
+            </a>
+            <div className="atlas-hero-foot">
+              <Accessibility size={20} />
               <span>
-                Different journeys.
+                Designed around mobility.
                 <br />
-                <strong>The same freedom to explore.</strong>
+                <strong>Starting with downtown Bentonville.</strong>
               </span>
             </div>
-          </div>
-          <div
-            className="hero-art"
-            onPointerMove={(event) => {
-              if (
-                reduced ||
-                event.pointerType === "touch" ||
-                !matchMedia("(hover:hover) and (pointer:fine)").matches
-              )
-                return;
-              const r = event.currentTarget.getBoundingClientRect();
-              event.currentTarget.style.setProperty(
-                "--phone-x",
-                `${((event.clientY - r.top) / r.height - 0.5) * -8}deg`,
-              );
-              event.currentTarget.style.setProperty(
-                "--phone-y",
-                `${((event.clientX - r.left) / r.width - 0.5) * 12}deg`,
-              );
-            }}
-            onPointerLeave={(event) => {
-              event.currentTarget.style.setProperty("--phone-x", "0deg");
-              event.currentTarget.style.setProperty("--phone-y", "0deg");
-            }}
+          </motion.div>
+          <motion.div
+            className="atlas-preview"
+            {...reveal}
+            transition={{ duration: 0.65, delay: 0.12 }}
           >
-            <div className="art-orbit orbit-one" />
-            <div className="art-orbit orbit-two" />
-            <div className="art-grid" />
-            <span className="art-coordinate">DESIGNED FOR YOUR EVERYDAY</span>
-            <div className="phone-intro">
-              <div className="phone-scroll">
-                <div className="phone-tilt">
-                  {reduced ? (
-                    <img
-                      className="phone-static"
-                      src="/animations/phone-poster.webp"
-                      alt="PathAble navigation interface on a titanium smartphone"
-                    />
-                  ) : (
-                    <>
-                      <video
-                        ref={phone}
-                        className="phone-render"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        poster="/animations/phone-poster.webp"
-                        aria-label="PathAble navigation on a rotating smartphone"
-                      >
-                        <source
-                          src="/animations/pathable-phone.mp4"
-                          type="video/mp4"
-                        />
-                      </video>
-                    </>
-                  )}
-                </div>
+            <div className="atlas-preview-header">
+              <div>
+                <span className="atlas-small">YOUR NEXT JOURNEY</span>
+                <strong>Downtown → City Square</strong>
+              </div>
+              <MapPin size={20} />
+            </div>
+            <div className="atlas-map-container">
+              <RoutePreview accessible={accessible} />
+              <div className="atlas-map-tag">
+                <span /> BENTONVILLE PILOT
               </div>
             </div>
-            {!reduced && (
-              <button
-                className="motion-toggle"
-                onClick={() => {
-                  if (playing) {
-                    phone.current?.pause();
-                  } else {
-                    void phone.current?.play();
-                  }
-                  setPlaying(!playing);
-                }}
-                aria-label={
-                  playing ? "Pause phone animation" : "Play phone animation"
-                }
+            <div className="atlas-preview-bottom">
+              <div
+                className="atlas-segment"
+                role="group"
+                aria-label="Compare example routes"
               >
-                {playing ? "Ⅱ Pause motion" : "▷ Play motion"}
-              </button>
-            )}
-            <div className="hero-phone-shadow" />
-            <div className="floating-badge badge-top">
-              <span className="round-icon">
-                <ShieldCheck size={20} />
-              </span>
-              <div>
-                A route that fits you<span>Thoughtfully personalized</span>
+                <button
+                  aria-pressed={!accessible}
+                  onClick={() => setAccessible(false)}
+                >
+                  Shortest route
+                </button>
+                <button
+                  aria-pressed={accessible}
+                  onClick={() => setAccessible(true)}
+                >
+                  <Accessibility size={16} /> Step-free route
+                </button>
               </div>
-              <Check size={15} />
-            </div>
-            <div className="floating-badge badge-bottom">
-              <span className="round-icon teal">
-                <Route size={21} />
-              </span>
-              <div>
-                More possibility.<span>Fewer barriers.</span>
-              </div>
-            </div>
-            <span className="art-index">01 / A NEW PERSPECTIVE</span>
-          </div>
-        </section>
-        <div className="values-strip">
-          <span>
-            BUILT AROUND PEOPLE. <strong>NOT JUST PLACES.</strong>
-          </span>
-          <div>
-            <Accessibility /> Mobility-first design
-          </div>
-          <div>
-            <Route /> Thoughtful routes
-          </div>
-          <div>
-            <Heart /> Greater independence
-          </div>
-        </div>
-        <ProblemStory />
-        <PersonalStory profile={profile} onProfile={(id) => onProfile?.(id)} />
-        <section id="how" className="how-section section reveal">
-          <div className="section-top">
-            <div>
-              <div className="eyebrow">YOUR WORLD. MORE ACCESSIBLE.</div>
-              <h2>
-                A small detour.
-                <br />A world of difference.
-              </h2>
-            </div>
-            <p>
-              The shortest route isn't always the right one.
-              <br />
-              PathAble puts your needs at the center of every journey.
-            </p>
-          </div>
-          <div className="steps-grid">
-            {[
-              {
-                icon: Accessibility,
-                n: "01",
-                title: "Start with you.",
-                text: "Choose a mobility profile that reflects how you move.",
-              },
-              {
-                icon: SlidersHorizontal,
-                n: "02",
-                title: "Make it personal.",
-                text: "Tell us what matters, from gentler slopes to smoother paths.",
-              },
-              {
-                icon: MoveUpRight,
-                n: "03",
-                title: "Find your way.",
-                text: "Compare the featured routes and choose what fits you.",
-              },
-            ].map((s) => (
-              <article key={s.n}>
-                <div className="step-top">
-                  <s.icon size={25} />
-                  <span>{s.n}</span>
-                </div>
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-        <section id="features" className="feature-section section">
-          <div className="feature-visual reveal">
-            <div className="mini-map">
-              <span className="street st1">SW A STREET</span>
-              <span className="street st2">WEST CENTRAL AVENUE</span>
-              <div className="park">
-                CITY
-                <br />
-                SQUARE
-              </div>
-              <svg viewBox="0 0 500 380" aria-hidden="true">
-                <path className="mini-other" d="M95 310V160H350V90" />
-                <path className="mini-route" d="M95 310H180V90H350" />
-                <circle cx="95" cy="310" r="10" fill="#7c3aed" />
-                <circle
-                  cx="350"
-                  cy="90"
-                  r="10"
-                  fill="#fff"
-                  stroke="#7c3aed"
-                  strokeWidth="5"
-                />
-              </svg>
-              <div className="map-card">
-                <span className="pill">A LITTLE FARTHER. A BETTER FIT.</span>
-                <strong>Accessibility-focused route</strong>
+              <div className="atlas-preview-readout" aria-live="polite">
                 <div>
-                  410 m <span>·</span> 7 min estimate <ShieldCheck size={17} />
+                  <strong>
+                    {routeDistance(previewRoute)}
+                    <small> m</small>
+                  </strong>
+                  <span>
+                    {accessible
+                      ? "Around the stairs"
+                      : "Includes modeled stairs"}
+                  </span>
                 </div>
+                <span
+                  className={
+                    accessible ? "atlas-status" : "atlas-status warning"
+                  }
+                >
+                  {accessible ? <Check size={15} /> : <Flag size={15} />}{" "}
+                  {accessible
+                    ? "Matches step-free needs"
+                    : "Review this barrier"}
+                </span>
               </div>
+              <small className="atlas-caption">
+                Interactive route study · modeled accessibility conditions
+              </small>
             </div>
-          </div>
-          <div className="feature-copy reveal">
-            <div className="eyebrow">CONFIDENCE AT EVERY TURN</div>
+          </motion.div>
+        </section>
+        <div className="atlas-principles">
+          <span>
+            <Accessibility size={18} /> Mobility comes first
+          </span>
+          <span>
+            <Navigation size={18} /> Directions with context
+          </span>
+          <span>
+            <Flag size={18} /> A way around obstacles
+          </span>
+        </div>
+        <section id="how" className="atlas-experience">
+          <motion.div className="atlas-section-heading" {...reveal}>
+            <span className="atlas-kicker">01 / THE EXPERIENCE</span>
             <h2>
-              More than
+              Know the route.
               <br />
-              getting there.
+              <em>Before you take it.</em>
             </h2>
             <p>
-              See the details that make a difference. Compare sample slopes,
-              curb ramps, and pathway conditions in one clear view.
+              Less guesswork at the next crossing. More control over the way you
+              get there.
             </p>
-            <ul>
-              <li>
-                <Check /> Routes shaped by your preferences
-              </li>
-              <li>
-                <Check /> Clear, understandable route comparisons
-              </li>
-              <li>
-                <Check /> An alternative when plans change
-              </li>
-            </ul>
-            <button className="text-link" onClick={enter} data-magnetic>
+          </motion.div>
+          <div className="atlas-feature-grid">
+            <motion.article {...reveal}>
+              <div className="atlas-feature-top">
+                <span>01</span>
+                <Accessibility />
+              </div>
+              <h3>Start with you.</h3>
+              <p>
+                Choose your mobility profile. Prioritize step-free paths, curb
+                ramps, and gentler inclines.
+              </p>
+              <div
+                className="atlas-profile-demo"
+                role="group"
+                aria-label="Preview mobility profile"
+              >
+                {(
+                  [
+                    ["manual", "Manual wheelchair"],
+                    ["powered", "Powered wheelchair"],
+                  ] as const
+                ).map(([id, label]) => (
+                  <button
+                    key={id}
+                    aria-pressed={profile === id}
+                    onClick={() => onProfile?.(id)}
+                  >
+                    <span>{profile === id && <Check size={12} />}</span>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </motion.article>
+            <motion.article {...reveal}>
+              <div className="atlas-feature-top">
+                <span>02</span>
+                <Navigation />
+              </div>
+              <h3>See your next move.</h3>
+              <p>
+                Follow numbered directions, inspect the map, and open real
+                street-level imagery when you need context.
+              </p>
+              <div className="atlas-instruction-example">
+                <ArrowRight size={28} />
+                <div>
+                  <small>NEXT DIRECTION</small>
+                  <strong>Turn onto Central Ave</strong>
+                  <span>Then continue toward the square</span>
+                </div>
+              </div>
+            </motion.article>
+            <motion.article {...reveal}>
+              <div className="atlas-feature-top">
+                <span>03</span>
+                <Flag />
+              </div>
+              <h3>Find another way.</h3>
+              <p>
+                A blocked curb changes the journey. Report it and recalculate
+                around the affected segment.
+              </p>
+              <div className="atlas-report-example">
+                <span className="atlas-hazard-dot" />
+                <div>
+                  <strong>Blocked curb ramp</strong>
+                  <small>Excluded from the next route</small>
+                </div>
+                <Check size={18} />
+              </div>
+            </motion.article>
+          </div>
+        </section>
+        <section id="local" className="atlas-local">
+          <motion.div className="atlas-local-photo" {...reveal}>
+            <img
+              src="/ar/scenes/bentonville-square.webp"
+              alt="Historic view of downtown Bentonville's brick storefronts and streets"
+              loading="lazy"
+            />
+            <span>BENTONVILLE, AR · HISTORICAL REFERENCE</span>
+          </motion.div>
+          <motion.div className="atlas-local-copy" {...reveal}>
+            <span className="atlas-kicker">02 / OUR STARTING POINT</span>
+            <h2>
+              A familiar place.
+              <br />
+              <em>A different perspective.</em>
+            </h2>
+            <p>
+              We’re starting with one downtown journey: a pickup point to City
+              Square. A small network lets us show exactly how personal
+              preferences and reported barriers change a route.
+            </p>
+            <div className="atlas-local-detail">
+              <MapPin />
+              <div>
+                <strong>Downtown pickup → City Square</strong>
+                <span>Three route alternatives. One connected experience.</span>
+              </div>
+            </div>
+            <button className="atlas-text-action" onClick={start}>
               Explore the Bentonville journey <ArrowUpRight size={19} />
             </button>
             <small>
-              Featured scenario · Illustrative accessibility conditions
+              Accessibility attributes are modeled, not field-verified. Photo:
+              Brandonrush, CC BY-SA 3.0.{" "}
+              <a href="/ar/ATTRIBUTION.md" target="_blank" rel="noreferrer">
+                Image credits ↗
+              </a>
             </small>
-          </div>
+          </motion.div>
         </section>
-        <VisualStory start={enter} />
-        <section id="community" className="community section reveal">
+        <section id="questions" className="atlas-faq">
+          <motion.div {...reveal}>
+            <span className="atlas-kicker">03 / GOOD TO KNOW</span>
+            <h2>A clearer picture.</h2>
+            <p>What works today, and what comes next.</p>
+          </motion.div>
           <div>
-            <div className="eyebrow">BETTER, TOGETHER</div>
-            <h2>
-              One shared detail.
-              <br />A more open world.
-            </h2>
-            <p>
-              A blocked curb ramp can change a journey. Try reporting an example
-              barrier and see how PathAble prepares an alternative.
-            </p>
-            <button className="button white" onClick={enter} data-magnetic>
-              Try the featured journey <ArrowUpRight size={18} />
-            </button>
+            {[
+              [
+                "Where can I use PathAble?",
+                "This pilot supports a small downtown Bentonville network between the featured pickup point and City Square. It is not citywide navigation.",
+              ],
+              [
+                "How are routes personalized?",
+                "A local graph search excludes modeled stairs or missing ramps when required, and adds penalties for slopes and uneven surfaces. Your choices affect the recommended route.",
+              ],
+              [
+                "Is Street View the same as augmented reality?",
+                "No. Street View opens Google’s panoramic imagery in another tab. Live camera-aligned AR is a future feature, and the route preview does not track your GPS position.",
+              ],
+              [
+                "What happens when I report a barrier?",
+                "The report stays in your browser session. The affected segment is excluded and the route is recalculated from the starting point. Nothing is sent to a city agency.",
+              ],
+            ].map(([q, a]) => (
+              <details key={q}>
+                <summary>
+                  {q}
+                  <Plus size={18} />
+                </summary>
+                <p>{a}</p>
+              </details>
+            ))}
           </div>
-          <CommunityDemo />
         </section>
-        <section className="cta section reveal">
-          <div className="eyebrow">THE WAY FORWARD IS YOURS</div>
-          <h2>
-            Your journey.
-            <br />
-            <span>Your way.</span>
-          </h2>
-          <button className="button" onClick={enter} data-magnetic>
-            Start your journey <ChevronRight size={19} />
+        <motion.section className="atlas-final" {...reveal}>
+          <div>
+            <span className="atlas-kicker">YOUR JOURNEY STARTS HERE</span>
+            <h2>
+              Make room for
+              <br />
+              <em>your way forward.</em>
+            </h2>
+          </div>
+          <button className="atlas-primary light" onClick={start}>
+            Find your route <ArrowUpRight size={23} />
           </button>
-          <p>
-            <MapPin size={14} /> Discover our featured Bentonville, Arkansas
-            journey.
-          </p>
-        </section>
+        </motion.section>
       </main>
-      <footer>
+      <footer className="atlas-footer">
         <Brand
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={() =>
+            window.scrollTo({
+              top: 0,
+              behavior: reduced ? "instant" : "smooth",
+            })
+          }
         />
-        <p>Navigation without barriers.</p>
-        <span>2026 Congressional App Challenge · Arkansas District 3</span>
+        <span>Mobility-first navigation · Bentonville pilot</span>
+        <a href="#questions">
+          About this pilot <ArrowUpRight size={15} />
+        </a>
       </footer>
-      {portal && <PhonePortal rect={portal} done={start} />}
     </div>
   );
 }

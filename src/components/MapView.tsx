@@ -14,6 +14,8 @@ export default function MapView({
   compact = false,
   hovered,
   sidebar = false,
+  coordinate,
+  onInspect,
 }: {
   selected: Route["id"];
   showRoutes: boolean;
@@ -22,9 +24,15 @@ export default function MapView({
   compact?: boolean;
   hovered?: Route["id"] | null;
   sidebar?: boolean;
+  coordinate?: [number, number];
+  onInspect?: (point: [number, number]) => void;
 }) {
   const container = useRef<HTMLDivElement>(null),
     map = useRef<maplibregl.Map | null>(null);
+  const inspectHandler = useRef(onInspect);
+  useEffect(() => {
+    inspectHandler.current = onInspect;
+  }, [onInspect]);
   const positionMarker = useRef<maplibregl.Marker | null>(null);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -41,6 +49,9 @@ export default function MapView({
         attributionControl: { compact: true },
       });
       map.current = m;
+      m.on("click", (e) =>
+        inspectHandler.current?.([e.lngLat.lng, e.lngLat.lat]),
+      );
       m.addControl(
         new maplibregl.NavigationControl({ showCompass: false }),
         "top-right",
@@ -103,9 +114,9 @@ export default function MapView({
           source: id,
           layout: { "line-cap": "round", "line-join": "round" },
           paint: {
-            "line-color": r.id === selected ? "#7c3aed" : "#9098a5",
+            "line-color": r.id === selected ? "#7c3aed" : "#64748b",
             "line-width": r.id === selected ? 7 : 4,
-            "line-opacity": r.id === selected ? 1 : 0.35,
+            "line-opacity": r.id === selected ? 1 : 0.75,
             "line-opacity-transition": { duration: 400 },
             "line-color-transition": { duration: 350 },
           },
@@ -116,8 +127,13 @@ export default function MapView({
         "line-color",
         r.id === selected ? "#7c3aed" : "#9098a5",
       );
+      m.setPaintProperty(
+        id,
+        "line-dasharray",
+        r.id === selected ? [1, 0] : [2, 2],
+      );
       m.setPaintProperty(id, "line-width", r.id === selected ? 7 : 4);
-      m.setPaintProperty(id, "line-opacity", r.id === selected ? 1 : 0.45);
+      m.setPaintProperty(id, "line-opacity", r.id === selected ? 1 : 0.75);
     }
     let animationFrame = 0;
     if (
@@ -170,7 +186,9 @@ export default function MapView({
           ? Math.min(22, m.getContainer().clientHeight * 0.15)
           : {
               top: Math.min(145, m.getContainer().clientHeight * 0.22),
-              bottom: Math.min(75, m.getContainer().clientHeight * 0.12),
+              bottom: onInspect
+                ? Math.min(270, m.getContainer().clientHeight * 0.48)
+                : Math.min(75, m.getContainer().clientHeight * 0.12),
               left:
                 sidebar && m.getContainer().clientWidth > 700
                   ? Math.min(460, m.getContainer().clientWidth * 0.4)
@@ -196,7 +214,16 @@ export default function MapView({
       cancelAnimationFrame(animationFrame);
       marker.remove();
     };
-  }, [ready, selected, showRoutes, reported, compact, sidebar, viewSize]);
+  }, [
+    ready,
+    selected,
+    showRoutes,
+    reported,
+    compact,
+    sidebar,
+    viewSize,
+    onInspect,
+  ]);
   useEffect(() => {
     const m = map.current;
     if (!m || !ready) return;
@@ -218,23 +245,25 @@ export default function MapView({
   }, [ready, selected, hovered]);
   useEffect(() => {
     const m = map.current;
-    if (!m || !ready || progress === undefined) return;
-    const coordinate = pointAlongRoute(
-      routes.find((r) => r.id === selected)!,
-      progress,
-    );
+    if (!m || !ready || (progress === undefined && !coordinate)) return;
+    const position =
+      coordinate ??
+      pointAlongRoute(
+        routes.find((r) => r.id === selected)!,
+        progress ?? 0,
+      );
     if (!positionMarker.current) {
       const el = document.createElement("div");
       el.className = "ar-position-marker";
-      el.title = "Scripted journey position";
+      el.title = "Selected navigation position";
       el.setAttribute("role", "img");
-      el.setAttribute("aria-label", "Scripted journey position");
+      el.setAttribute("aria-label", "Selected navigation position");
       positionMarker.current = new maplibregl.Marker({ element: el })
-        .setLngLat(coordinate)
+        .setLngLat(position)
         .addTo(m);
-    } else positionMarker.current.setLngLat(coordinate);
+    } else positionMarker.current.setLngLat(position);
     positionMarker.current.getElement().dataset.progress = String(progress);
-  }, [ready, progress, selected]);
+  }, [ready, progress, selected, coordinate]);
   useEffect(
     () => () => {
       positionMarker.current = null;

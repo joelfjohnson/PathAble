@@ -62,6 +62,7 @@ export type JourneyAction =
       fromNavigation?: boolean;
       resumePlayback?: boolean;
     }
+  | { type: "nav-step"; index: number }
   | { type: "next" }
   | { type: "restart" }
   | {

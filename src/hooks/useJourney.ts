@@ -1,3 +1,4 @@
+import { solveRoute } from "../lib/routing";
 import { useEffect, useReducer, useRef } from "react";
 import { defaults, destination, routes } from "../data/journey";
 import type { JourneyAction, NavigationState } from "../types/journey";
@@ -28,6 +29,7 @@ export function journeyReducer(
       return {
         ...state,
         stage: action.stage,
+        completed: action.stage === "arrived" ? true : state.completed,
         ar:
           action.stage !== "navigation"
             ? { ...state.ar, playing: false }
@@ -54,7 +56,21 @@ export function journeyReducer(
         completed: false,
         ar: { ...initialARState, voiceEnabled: state.ar.voiceEnabled },
       };
+    case "nav-step":
+      return {
+        ...state,
+        currentStep: Math.max(
+          0,
+          Math.min(
+            Math.trunc(action.index) || 0,
+            routes.find((r) => r.id === state.selectedRoute)!.coordinates
+              .length - 2,
+          ),
+        ),
+      };
     case "report": {
+      const solved = solveRoute(state.preferences, true);
+      if (!solved) return state;
       const oldRoute = routes.find((r) => r.id === state.selectedRoute)!;
       const oldScene = getARScenes(
         state.selectedRoute,
@@ -70,7 +86,7 @@ export function journeyReducer(
       return {
         ...state,
         obstacle: action.obstacle,
-        selectedRoute: "C",
+        selectedRoute: solved.routeId,
         currentStep: 0,
         completed: false,
         stage: action.fromNavigation ? "navigation" : "processing",

@@ -29,10 +29,12 @@ import {
 } from "lucide-react";
 import Home from "./pages/Home";
 import JourneyProgress from "./components/JourneyProgress";
-import InteractiveCursor from "./components/motion/InteractiveCursor";
-import { useSurfaceMotion } from "./hooks/useSurfaceMotion";
+import { solveRoute, supportedPreferences, routeDistance } from "./lib/routing";
+import "./styles/finish.css";
+import "./styles/atlas.css";
+
 import { transitionJourney } from "./components/motion/transitionJourney";
-const ARNavigationPage = lazy(() => import("./pages/ARNavigationPage"));
+const ARNavigationPage = lazy(() => import("./pages/RouteNavigation"));
 import Brand from "./components/Brand";
 import ReportDialog from "./components/ReportDialog";
 import DestinationSearch from "./components/DestinationSearch";
@@ -122,10 +124,12 @@ export default function App() {
   const [origin, setOrigin] = useState("Downtown transit pickup"),
     [destination, setDestination] = useState("Bentonville City Square"),
     [searchError, setSearchError] = useState("");
+  const solution = solveRoute(state.preferences, !!state.obstacle);
+  const recommendedId = solution?.routeId;
   const route = routes.find((r) => r.id === state.selectedRoute)!;
   const profile = profiles.find((p) => p.id === state.profile)!;
   const stage = state.stage;
-  useSurfaceMotion(stage);
+
   const rerouting = stage === "processing" && !!state.obstacle;
   const go = useCallback(
     (next: NavigationState["stage"]) => {
@@ -172,16 +176,13 @@ export default function App() {
       return;
     }
     setSearchError("");
-    dispatch({
-      type: "route",
-      route: state.obstacle
-        ? "C"
-        : state.preferences.some((p) =>
-              ["slopes", "ramps", "stairs"].includes(p),
-            )
-          ? "B"
-          : "A",
-    });
+    if (!solution) {
+      setSearchError(
+        "No route meets these requirements. Adjust your preferences or remove the report.",
+      );
+      return;
+    }
+    dispatch({ type: "route", route: solution.routeId });
     go("processing");
   };
   const back = () => {
@@ -204,7 +205,6 @@ export default function App() {
     .filter((i) => state.preferences.includes(i.id));
   return (
     <MotionConfig reducedMotion="user">
-      <InteractiveCursor />
       {stage === "home" ? (
         <Home
           start={() => go("profile")}
@@ -343,10 +343,22 @@ export default function App() {
                               <div className="preference-items">
                                 {g.items.map((item) => (
                                   <label className="switch-row" key={item.id}>
-                                    <span>{item.label}</span>
+                                    <span>
+                                      {item.label}
+                                      {!supportedPreferences.includes(
+                                        item.id,
+                                      ) && (
+                                        <small className="unsupported-setting">
+                                          Not mapped in this area
+                                        </small>
+                                      )}
+                                    </span>
                                     <input
                                       type="checkbox"
                                       role="switch"
+                                      disabled={
+                                        !supportedPreferences.includes(item.id)
+                                      }
                                       checked={state.preferences.includes(
                                         item.id,
                                       )}
@@ -382,9 +394,9 @@ export default function App() {
                             preferences represented in this journey.
                           </p>
                           <small>
-                            Elevators, seating, entrance conditions,
-                            construction, and detailed surface measurements are
-                            not assessed in this scenario.
+                            Routing uses a small local network with modeled
+                            accessibility attributes. Unmapped options are
+                            disabled.
                           </small>
                         </aside>
                       </div>
@@ -423,7 +435,7 @@ export default function App() {
               <ARNavigationPage
                 state={state}
                 dispatch={dispatch}
-                onBack={() => go("prepare")}
+                onBack={() => go("routes")}
                 onReport={(resume) => {
                   resumeAfterReport.current = resume;
                   setReportOpen(true);
@@ -476,7 +488,7 @@ export default function App() {
                       <p>Bentonville City Square</p>
                       <div className="arrival-summary">
                         <span>
-                          <RouteIcon /> {route.distance} m
+                          <RouteIcon /> {routeDistance(route)} m
                         </span>
                         <span>
                           <CheckCircle2 /> Journey complete
@@ -528,11 +540,15 @@ export default function App() {
                         <h3>{route.name}</h3>
                         <div className="route-metrics">
                           <strong>
-                            {route.distance} <small>m</small>
+                            {routeDistance(route)} <small>m</small>
                           </strong>
                           <span>
                             <Clock3 size={16} />
-                            {route.minutes} min estimate
+                            {Math.max(
+                              1,
+                              Math.ceil(routeDistance(route) / 60),
+                            )}{" "}
+                            min estimate
                           </span>
                         </div>
                         {route.features.map((f) => (
@@ -651,31 +667,37 @@ export default function App() {
                               Square
                             </span>
                           </div>
+                          {solution && (
+                            <section
+                              className="route-reason"
+                              aria-label="Why this route"
+                            >
+                              <details>
+                                <summary>Why Route {solution.routeId}?</summary>
+                                <p>{solution.reasons.join(" · ")}</p>
+                                <div>
+                                  <span>
+                                    {solution.maxSlope}% max modeled incline
+                                  </span>
+                                  <span>{solution.steps} steps</span>
+                                </div>
+                                <small>
+                                  Calculated locally · illustrative conditions
+                                </small>
+                              </details>
+                            </section>
+                          )}
                           <div className="route-list">
                             {routes
                               .filter((r) => r.id !== "C" || state.obstacle)
                               .sort((a, b) => {
-                                const rec = state.obstacle
-                                  ? "C"
-                                  : state.preferences.some((p) =>
-                                        ["slopes", "ramps", "stairs"].includes(
-                                          p,
-                                        ),
-                                      )
-                                    ? "B"
-                                    : "A";
+                                const rec = recommendedId;
                                 return (
                                   Number(b.id === rec) - Number(a.id === rec)
                                 );
                               })
                               .map((r) => {
-                                const recommended = state.obstacle
-                                  ? r.id === "C"
-                                  : state.preferences.includes("slopes") ||
-                                      state.preferences.includes("ramps") ||
-                                      state.preferences.includes("stairs")
-                                    ? r.id === "B"
-                                    : r.id === "A";
+                                const recommended = r.id === recommendedId;
                                 return (
                                   <article
                                     className={
@@ -722,6 +744,10 @@ export default function App() {
                                       onClick={() =>
                                         dispatch({ type: "route", route: r.id })
                                       }
+                                      disabled={
+                                        !!state.obstacle &&
+                                        r.id !== recommendedId
+                                      }
                                       aria-pressed={
                                         r.id === state.selectedRoute
                                       }
@@ -737,11 +763,15 @@ export default function App() {
                                       <h3>{r.name}</h3>
                                       <div className="route-metrics">
                                         <strong>
-                                          {r.distance} <small>m</small>
+                                          {routeDistance(r)} <small>m</small>
                                         </strong>
                                         <span>
                                           <Clock3 size={15} />
-                                          {r.minutes} min estimate
+                                          {Math.max(
+                                            1,
+                                            Math.ceil(routeDistance(r) / 60),
+                                          )}{" "}
+                                          min estimate
                                         </span>
                                       </div>
                                       <p>{r.description}</p>
@@ -792,9 +822,7 @@ export default function App() {
                   <div className="scenario-disclaimer">
                     <ShieldCheck size={14} />
                     <span>
-                      Featured scenario. Distances, travel times, and
-                      accessibility conditions are illustrative, not verified
-                      guidance.
+                      Bentonville pilot · accessibility conditions are modeled.
                     </span>
                   </div>
                 </div>
@@ -807,7 +835,12 @@ export default function App() {
                           Route {state.selectedRoute} selected
                         </span>
                         <strong>
-                          {route.distance} m <span>· {route.minutes} min</span>
+                          {routeDistance(route)} m{" "}
+                          <span>
+                            ·{" "}
+                            {Math.max(1, Math.ceil(routeDistance(route) / 60))}{" "}
+                            min
+                          </span>
                         </strong>
                       </div>
                     )}
@@ -816,8 +849,7 @@ export default function App() {
                       onClick={
                         stage === "dashboard"
                           ? findRoutes
-                          : () =>
-                              go(stage === "routes" ? "prepare" : "navigation")
+                          : () => go("navigation")
                       }
                     >
                       {stage === "dashboard"
@@ -833,7 +865,7 @@ export default function App() {
                         onClick={() => setReportOpen(true)}
                       >
                         <Flag size={14} />
-                        Report an example barrier
+                        Report a barrier
                       </button>
                     )}
                     {stage === "prepare" && (
@@ -887,12 +919,12 @@ export default function App() {
                     <strong>
                       {stage === "dashboard"
                         ? "Your mobility, remembered."
-                        : `Route ${state.selectedRoute} · ${route.distance} m`}
+                        : `Route ${state.selectedRoute} · ${routeDistance(route)} m`}
                     </strong>
                     <small>
                       {stage === "dashboard"
                         ? profile.name
-                        : `${route.minutes} min estimate · ${profile.name}`}
+                        : `${Math.max(1, Math.ceil(routeDistance(route) / 60))} min estimate · ${profile.name}`}
                     </small>
                   </div>
                 </div>
