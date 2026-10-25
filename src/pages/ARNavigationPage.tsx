@@ -1,3 +1,4 @@
+import "../styles/ar-cinematic.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
@@ -221,11 +222,11 @@ export default function ARNavigationPage({
             <span className="round-icon">
               <Navigation size={24} />
             </span>
-            <div className="eyebrow">THE WAY FORWARD IS YOURS</div>
+            <div className="eyebrow">BENTONVILLE · VISUAL NAVIGATION</div>
             <h1 tabIndex={-1}>Your journey is ready.</h1>
             <p>
-              A clearer view of the path ahead. Explore our visual Bentonville
-              walkthrough at your pace.
+              Follow the purple path. Explore crossings, report a barrier, and
+              find a new way to the square.
             </p>
             <div className="ar-ready-profile">
               <Accessibility size={18} />
@@ -298,9 +299,28 @@ export default function ARNavigationPage({
               </div>
             )}
             <div className="ar-bottom-panel">
+              <div className="ar-chapters" aria-label="Journey stages">
+                {scenes.map((step, stepIndex) => (
+                  <span
+                    key={step.id}
+                    className={
+                      stepIndex === index
+                        ? "current"
+                        : stepIndex < index
+                          ? "complete"
+                          : ""
+                    }
+                    aria-current={stepIndex === index ? "step" : undefined}
+                    title={step.locationLabel}
+                  >
+                    <i />
+                    <small>{stepIndex + 1}</small>
+                  </span>
+                ))}
+              </div>
               <div className="ar-journey-progress">
                 <span>
-                  YOUR JOURNEY{" "}
+                  ROUTE PROGRESS{" "}
                   <strong>{Math.round(routeProgress * 100)}%</strong>
                 </span>
                 <div

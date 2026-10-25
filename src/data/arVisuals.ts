@@ -1,36 +1,5 @@
 import type { ARScene, Point } from "../types/ar";
-const neutral = (file: string, alt: string): ARScene["media"] => ({
-  type: "image",
-  src: `/ar/scenes/${file}.svg`,
-  width: 1600,
-  height: 1200,
-  alt,
-  isReference: false,
-});
-const straight: Point[] = [
-  { x: 0.54, y: 0.99 },
-  { x: 0.53, y: 0.86 },
-  { x: 0.53, y: 0.73 },
-  { x: 0.53, y: 0.62 },
-  { x: 0.53, y: 0.51 },
-  { x: 0.53, y: 0.445 },
-];
-const crossing: Point[] = [
-  { x: 0.51, y: 0.98 },
-  { x: 0.49, y: 0.84 },
-  { x: 0.5, y: 0.72 },
-  { x: 0.56, y: 0.66 },
-  { x: 0.62, y: 0.61 },
-  { x: 0.66, y: 0.56 },
-];
-const alternative: Point[] = [
-  { x: 0.54, y: 0.99 },
-  { x: 0.55, y: 0.87 },
-  { x: 0.57, y: 0.75 },
-  { x: 0.6, y: 0.64 },
-  { x: 0.62, y: 0.53 },
-  { x: 0.63, y: 0.45 },
-];
+// Per-view ground coordinates share the media transform; no GPS anchoring is implied.
 export const arVisuals: Record<
   string,
   {
@@ -44,10 +13,9 @@ export const arVisuals: Record<
     media: {
       type: "video",
       src: "/ar/videos/square-reference.mp4",
-      poster: "/ar/scenes/bentonville-square.webp",
       width: 1600,
       height: 1200,
-      alt: "Historical Bentonville Square reference video from 2013 with an illustrative navigation overlay.",
+      alt: "Bentonville City Square brick crossing and planted island, 2013.",
       isReference: true,
       credit: {
         author: "Brandonrush · 2013",
@@ -55,63 +23,381 @@ export const arVisuals: Record<
           "https://commons.wikimedia.org/wiki/File:Downtown_Bentonville,_AR.jpg",
         license: "CC BY-SA 3.0",
         licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
-        changes:
-          "Presented as an eight-second reference clip with an illustrative navigation overlay.",
+        changes: "Resized; animated framing and illustrative overlays.",
       },
+      poster: "/ar/scenes/bentonville-square.webp",
     },
-    points: straight,
-    location: "Bentonville Square reference",
-    camera: { zoom: 0.025, panY: -0.005 },
+    points: [
+      {
+        x: 0.77,
+        y: 0.99,
+      },
+      {
+        x: 0.64,
+        y: 0.87,
+      },
+      {
+        x: 0.51,
+        y: 0.73,
+      },
+      {
+        x: 0.49,
+        y: 0.69,
+      },
+      {
+        x: 0.44,
+        y: 0.65,
+      },
+      {
+        x: 0.35,
+        y: 0.6,
+      },
+    ],
+    location: "City Square · brick pathway",
+    camera: {
+      zoom: 0.13,
+      panX: -0.015,
+      panY: -0.008,
+    },
   },
   intersection: {
-    media: neutral(
-      "crossing",
-      "Original illustration of an approaching street crossing.",
-    ),
-    points: crossing,
-    location: "Approaching the sample crossing",
-    camera: { zoom: 0.02, panX: -0.005 },
+    media: {
+      type: "image",
+      src: "/ar/scenes/massey.jpg",
+      width: 1920,
+      height: 1440,
+      alt: "Historic Hotel Massey in downtown Bentonville, AR",
+      isReference: true,
+      credit: {
+        author: "Brandonrush",
+        source: "https://commons.wikimedia.org/wiki/File:Hotel_Massey.jpg",
+        license: "CC BY-SA 3.0",
+        licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0",
+        changes:
+          "Resized; animated framing and illustrative route overlays. Historical reference, not a recording of this route.",
+      },
+    },
+    points: [
+      {
+        x: 0.98,
+        y: 0.88,
+      },
+      {
+        x: 0.84,
+        y: 0.875,
+      },
+      {
+        x: 0.7,
+        y: 0.887,
+      },
+      {
+        x: 0.57,
+        y: 0.9,
+      },
+      {
+        x: 0.43,
+        y: 0.915,
+      },
+      {
+        x: 0.29,
+        y: 0.93,
+      },
+    ],
+    location: "Central Avenue · Massey corner",
+    camera: {
+      zoom: 0.12,
+      panX: 0.025,
+    },
+  },
+  curb: {
+    media: {
+      type: "image",
+      src: "/ar/scenes/bentonville-square.webp",
+      width: 1600,
+      height: 1200,
+      alt: "Bentonville City Square brick crossing and planted island, 2013.",
+      isReference: true,
+      credit: {
+        author: "Brandonrush · 2013",
+        source:
+          "https://commons.wikimedia.org/wiki/File:Downtown_Bentonville,_AR.jpg",
+        license: "CC BY-SA 3.0",
+        licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
+        changes: "Resized; animated framing and illustrative overlays.",
+      },
+    },
+    points: [
+      {
+        x: 0.77,
+        y: 0.99,
+      },
+      {
+        x: 0.64,
+        y: 0.87,
+      },
+      {
+        x: 0.51,
+        y: 0.73,
+      },
+      {
+        x: 0.49,
+        y: 0.69,
+      },
+      {
+        x: 0.44,
+        y: 0.65,
+      },
+      {
+        x: 0.35,
+        y: 0.6,
+      },
+    ],
+    location: "Square crossing · ramp connection",
+    camera: {
+      zoom: 0.22,
+      panX: -0.025,
+      panY: -0.01,
+    },
   },
   barrier: {
-    media: neutral(
-      "barrier",
-      "Original illustration of a sample obstruction and construction cones ahead.",
-    ),
+    media: {
+      type: "image",
+      src: "/ar/scenes/walton.jpg",
+      width: 1920,
+      height: 1276,
+      alt: "Walton five and dime Bentonville AR",
+      isReference: true,
+      credit: {
+        author: "Russ",
+        source:
+          "https://commons.wikimedia.org/wiki/File:Walton_five_and_dime_Bentonville_AR_(14292373504).jpg",
+        license: "CC BY 2.0",
+        licenseUrl: "https://creativecommons.org/licenses/by/2.0",
+        changes:
+          "Resized; animated framing and illustrative route overlays. Historical reference, not a recording of this route.",
+      },
+    },
     points: [
-      { x: 0.54, y: 0.99 },
-      { x: 0.53, y: 0.86 },
-      { x: 0.53, y: 0.75 },
-      { x: 0.54, y: 0.68 },
-      { x: 0.55, y: 0.63 },
+      {
+        x: 0.22,
+        y: 0.87,
+      },
+      {
+        x: 0.28,
+        y: 0.84,
+      },
+      {
+        x: 0.33,
+        y: 0.81,
+      },
+      {
+        x: 0.37,
+        y: 0.79,
+      },
+      {
+        x: 0.39,
+        y: 0.77,
+      },
     ],
-    location: "Sample barrier at the route junction",
-    camera: { zoom: 0.018, panY: -0.004 },
+    location: "Main Street · storefront pathway",
+    camera: {
+      zoom: 0.12,
+      panX: 0.02,
+    },
   },
   alternative: {
-    media: neutral(
-      "alternative",
-      "Original illustrative view of the alternative pathway beside a planted area.",
-    ),
-    points: alternative,
-    location: "Alternative pathway",
-    camera: { zoom: 0.025, panX: -0.006 },
+    media: {
+      type: "image",
+      src: "/ar/scenes/roy.jpg",
+      width: 1920,
+      height: 1442,
+      alt: "Roy's Office Supply Building in downtown Bentonville, Arkansas",
+      isReference: true,
+      credit: {
+        author: "Brandonrush",
+        source:
+          "https://commons.wikimedia.org/wiki/File:Roy%27s_Office_Supply_Building.jpg",
+        license: "CC BY-SA 3.0",
+        licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0",
+        changes:
+          "Resized; animated framing and illustrative route overlays. Historical reference, not a recording of this route.",
+      },
+    },
+    points: [
+      {
+        x: 0.98,
+        y: 0.97,
+      },
+      {
+        x: 0.87,
+        y: 0.95,
+      },
+      {
+        x: 0.76,
+        y: 0.93,
+      },
+      {
+        x: 0.66,
+        y: 0.915,
+      },
+      {
+        x: 0.56,
+        y: 0.9,
+      },
+      {
+        x: 0.49,
+        y: 0.89,
+      },
+    ],
+    location: "Main Street · alternative sidewalk",
+    camera: {
+      zoom: 0.14,
+      panX: -0.025,
+    },
   },
   "north-crossing": {
-    media: neutral(
-      "north-crossing",
-      "Original illustrative view of a northern crossing with a park pavilion.",
-    ),
-    points: crossing,
-    location: "Northern sample crossing",
-    camera: { zoom: 0.018, panX: 0.006 },
+    media: {
+      type: "image",
+      src: "/ar/scenes/terry.jpg",
+      width: 1920,
+      height: 1439,
+      alt: "Terry Block Building in Bentonville, Arkansas NRHP: 82004613.",
+      isReference: true,
+      credit: {
+        author: "Brandonrush",
+        source:
+          "https://commons.wikimedia.org/wiki/File:Terry_Block_Building.jpg",
+        license: "CC BY-SA 3.0",
+        licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0",
+        changes:
+          "Resized; animated framing and illustrative route overlays. Historical reference, not a recording of this route.",
+      },
+    },
+    points: [
+      {
+        x: 0.39,
+        y: 0.99,
+      },
+      {
+        x: 0.4,
+        y: 0.93,
+      },
+      {
+        x: 0.41,
+        y: 0.87,
+      },
+      {
+        x: 0.43,
+        y: 0.84,
+      },
+      {
+        x: 0.49,
+        y: 0.845,
+      },
+      {
+        x: 0.6,
+        y: 0.86,
+      },
+    ],
+    location: "Central & Main · corner connection",
+    camera: {
+      zoom: 0.13,
+      panX: -0.02,
+    },
   },
   rejoin: {
-    media: neutral(
-      "avenue",
-      "Original illustration of the final curved pathway toward a park entrance.",
-    ),
-    points: alternative,
-    location: "The final approach",
-    camera: { zoom: 0.024, panY: -0.006 },
+    media: {
+      type: "image",
+      src: "/ar/scenes/walton.jpg",
+      width: 1920,
+      height: 1276,
+      alt: "Walton five and dime Bentonville AR",
+      isReference: true,
+      credit: {
+        author: "Russ",
+        source:
+          "https://commons.wikimedia.org/wiki/File:Walton_five_and_dime_Bentonville_AR_(14292373504).jpg",
+        license: "CC BY 2.0",
+        licenseUrl: "https://creativecommons.org/licenses/by/2.0",
+        changes:
+          "Resized; animated framing and illustrative route overlays. Historical reference, not a recording of this route.",
+      },
+    },
+    points: [
+      {
+        x: 0.2,
+        y: 0.88,
+      },
+      {
+        x: 0.27,
+        y: 0.85,
+      },
+      {
+        x: 0.33,
+        y: 0.82,
+      },
+      {
+        x: 0.38,
+        y: 0.79,
+      },
+      {
+        x: 0.41,
+        y: 0.77,
+      },
+    ],
+    location: "West side of City Square",
+    camera: {
+      zoom: 0.19,
+      panX: 0.025,
+    },
+  },
+  square: {
+    media: {
+      type: "image",
+      src: "/ar/scenes/bentonville-square.webp",
+      width: 1600,
+      height: 1200,
+      alt: "Bentonville City Square brick crossing and planted island, 2013.",
+      isReference: true,
+      credit: {
+        author: "Brandonrush · 2013",
+        source:
+          "https://commons.wikimedia.org/wiki/File:Downtown_Bentonville,_AR.jpg",
+        license: "CC BY-SA 3.0",
+        licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
+        changes: "Resized; animated framing and illustrative overlays.",
+      },
+    },
+    points: [
+      {
+        x: 0.77,
+        y: 0.99,
+      },
+      {
+        x: 0.64,
+        y: 0.87,
+      },
+      {
+        x: 0.51,
+        y: 0.73,
+      },
+      {
+        x: 0.49,
+        y: 0.69,
+      },
+      {
+        x: 0.44,
+        y: 0.65,
+      },
+      {
+        x: 0.35,
+        y: 0.6,
+      },
+    ],
+    location: "Bentonville City Square",
+    camera: {
+      zoom: 0.1,
+      panX: 0.02,
+    },
   },
 };

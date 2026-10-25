@@ -90,8 +90,13 @@ export default function ARPathOverlay({
             scaled.length - 2,
             Math.floor(t * (scaled.length - 1)),
           ),
-          p = scaled[index],
+          a = scaled[index],
           q = scaled[index + 1],
+          fraction = t * (scaled.length - 1) - index,
+          p = {
+            x: a.x + (q.x - a.x) * fraction,
+            y: a.y + (q.y - a.y) * fraction,
+          },
           size = (0.006 + 0.027 * (1 - t) ** 1.5) * width,
           angle = (Math.atan2(q.y - p.y, q.x - p.x) * 180) / Math.PI + 90;
         return (
@@ -119,6 +124,27 @@ export default function ARPathOverlay({
           </g>
         );
       })}
+      {scene.id === "barrier" && (
+        <g transform={`translate(${width * 0.39} ${height * 0.77})`}>
+          <ellipse cy="10" rx="63" ry="10" fill="#251332" opacity=".28" />
+          <path d="M-45 8L-35-60M45 8L35-60" stroke="#e6e0d8" strokeWidth="7" />
+          <rect
+            x="-55"
+            y="-55"
+            width="110"
+            height="30"
+            rx="4"
+            fill="#f5a541"
+            stroke="#fff5db"
+            strokeWidth="2"
+          />
+          <path
+            d="M-44-53l20 26M-13-53l20 26M18-53l20 26"
+            stroke="#fff4db"
+            strokeWidth="12"
+          />
+        </g>
+      )}
       {scene.indicators
         .filter(
           (i) =>

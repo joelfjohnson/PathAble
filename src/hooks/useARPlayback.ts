@@ -49,7 +49,7 @@ export function useARPlayback({
     const start = performance.now(),
       offset = settings.current.elapsed;
     const usingVideo =
-      !!element && scene.media.type === "video" && !mediaFailed;
+      !!element && scene.media.type === "video" && mediaReady && !mediaFailed;
     if (usingVideo)
       void element.play().catch(() => {
         if (active && !element.error && element.isConnected) {

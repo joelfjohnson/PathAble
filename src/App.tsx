@@ -18,7 +18,6 @@ import {
   Flag,
   Footprints,
   MapPin,
-  Navigation,
   Route as RouteIcon,
   Settings2,
   ShieldCheck,
@@ -29,6 +28,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import Home from "./pages/Home";
+import JourneyProgress from "./components/JourneyProgress";
 import InteractiveCursor from "./components/motion/InteractiveCursor";
 import { useSurfaceMotion } from "./hooks/useSurfaceMotion";
 import { transitionJourney } from "./components/motion/transitionJourney";
@@ -215,10 +215,7 @@ export default function App() {
         <div className="application premium-application" data-stage={stage}>
           <header className="app-header">
             <Brand onClick={() => go("home")} />
-            <div className="app-breadcrumb">
-              <span className="live-dot" /> YOUR NEXT POSSIBILITY{" "}
-              <span> / Bentonville, Arkansas</span>
-            </div>
+            <JourneyProgress stage={stage} />
             <button className="profile-chip" onClick={() => go("profile")}>
               <Accessibility size={18} />
               <span>{profile.name}</span>
@@ -453,363 +450,399 @@ export default function App() {
                   {panelExpanded ? "Show more map" : "Open journey controls"}
                   <ChevronDown size={15} />
                 </button>
-                <button className="back-link" onClick={back}>
-                  <ArrowLeft size={16} />{" "}
-                  {stage === "dashboard" ? "Preferences" : "Back"}
-                </button>
-                {stage === "processing" ? (
-                  <Processing
-                    rerouting={rerouting}
-                    done={() => {
-                      go("routes");
-                    }}
-                  />
-                ) : stage === "arrived" ? (
-                  <div className="arrival">
-                    <motion.div
-                      initial={{ scale: 0.8 }}
-                      animate={{ scale: 1 }}
-                      className="arrival-icon"
-                    >
-                      <Check size={42} />
-                    </motion.div>
-                    <div className="eyebrow">A LITTLE MORE INDEPENDENCE</div>
-                    <h1 tabIndex={-1}>You've arrived.</h1>
-                    <p>Bentonville City Square</p>
-                    <div className="arrival-summary">
-                      <span>
-                        <RouteIcon /> {route.distance} m
-                      </span>
-                      <span>
-                        <CheckCircle2 /> Journey complete
-                      </span>
-                    </div>
-                    <h3>A journey on your terms.</h3>
-                    <p>
-                      You explored the {route.name.toLowerCase()} with your
-                      personal mobility preferences.
-                    </p>
-                    <small>
-                      Featured walkthrough completed. No real location was
-                      tracked.
-                    </small>
-                    <button
-                      className="button full"
-                      onClick={() => dispatch({ type: "restart" })}
-                    >
-                      Start another journey <ArrowRight size={17} />
-                    </button>
-                    <button
-                      className="text-link"
-                      onClick={() => go("dashboard")}
-                    >
-                      Return to dashboard
-                    </button>
-                  </div>
-                ) : stage === "prepare" ? (
-                  <div className="prepare">
-                    <span className="eyebrow">READY WHEN YOU ARE</span>
-                    <h1 tabIndex={-1}>
-                      A good journey
-                      <br />
-                      starts here.
-                    </h1>
-                    <div className="destination-title">
-                      <span className="round-icon">
-                        <MapPin />
-                      </span>
-                      <div>
-                        <small>YOUR DESTINATION</small>
-                        <h3>Bentonville City Square</h3>
-                      </div>
-                    </div>
-                    <div className="selected-summary">
-                      <span className="pill">ROUTE {route.id} · SELECTED</span>
-                      <h3>{route.name}</h3>
-                      <div className="route-metrics">
-                        <strong>
-                          {route.distance} <small>m</small>
-                        </strong>
+                <div className="journey-panel-scroll">
+                  <button className="back-link" onClick={back}>
+                    <ArrowLeft size={16} />{" "}
+                    {stage === "dashboard" ? "Preferences" : "Back"}
+                  </button>
+                  {stage === "processing" ? (
+                    <Processing
+                      rerouting={rerouting}
+                      done={() => {
+                        go("routes");
+                      }}
+                    />
+                  ) : stage === "arrived" ? (
+                    <div className="arrival">
+                      <motion.div
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        className="arrival-icon"
+                      >
+                        <Check size={42} />
+                      </motion.div>
+                      <div className="eyebrow">A LITTLE MORE INDEPENDENCE</div>
+                      <h1 tabIndex={-1}>You've arrived.</h1>
+                      <p>Bentonville City Square</p>
+                      <div className="arrival-summary">
                         <span>
-                          <Clock3 size={16} />
-                          {route.minutes} min estimate
+                          <RouteIcon /> {route.distance} m
+                        </span>
+                        <span>
+                          <CheckCircle2 /> Journey complete
                         </span>
                       </div>
-                      {route.features.map((f) => (
-                        <p key={f}>
-                          <Check size={16} />
-                          {f}
-                        </p>
-                      ))}
+                      <h3>A journey on your terms.</h3>
+                      <p>
+                        You explored the {route.name.toLowerCase()} with your
+                        personal mobility preferences.
+                      </p>
+                      <small>
+                        Featured walkthrough completed. No real location was
+                        tracked.
+                      </small>
+                      <button
+                        className="button full"
+                        onClick={() => dispatch({ type: "restart" })}
+                      >
+                        Start another journey <ArrowRight size={17} />
+                      </button>
+                      <button
+                        className="text-link"
+                        onClick={() => go("dashboard")}
+                      >
+                        Return to dashboard
+                      </button>
                     </div>
-                    <h3>Before you set off</h3>
-                    <ol className="instruction-list">
-                      {route.steps.map((s) => (
-                        <li key={s}>{s}</li>
-                      ))}
-                    </ol>
-                    <div className="info">
-                      <ShieldCheck size={19} />
-                      <span>
-                        Illustrative conditions. Assess your surroundings and
-                        use your own judgment.
-                      </span>
-                    </div>
-                    <button
-                      className="button full"
-                      onClick={() => go("navigation")}
-                    >
-                      Start navigation preview <Navigation size={17} />
-                    </button>
-                    <p className="muted centered">
-                      Manual step controls · Visual navigation preview
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="eyebrow">A LITTLE MORE POSSIBILITY</div>
-                    <h1 tabIndex={-1}>
-                      {stage === "routes"
-                        ? "Your way forward."
-                        : "Where to today?"}
-                    </h1>
-                    <p className="panel-intro">
-                      {stage === "routes"
-                        ? "Different paths. One destination. Your choice."
-                        : "A familiar place. A journey designed around you."}
-                    </p>
-                    {stage === "dashboard" ? (
-                      <>
-                        <DestinationSearch
-                          origin={origin}
-                          destination={destination}
-                          onOrigin={(text) => {
-                            setOrigin(text);
-                            setSearchError("");
-                          }}
-                          onDestination={(text) => {
-                            setDestination(text);
-                            setSearchError("");
-                          }}
-                          onSearch={findRoutes}
-                          onFeatured={() => {
-                            setOrigin("Downtown transit pickup");
-                            setDestination("Bentonville City Square");
-                            setSearchError("");
-                          }}
-                          error={searchError}
-                        />
-                        <div className="journey-personal">
-                          <div>
-                            <Accessibility size={19} />
-                            <strong>{profile.name}</strong>
-                            <button
-                              className="text-link"
-                              onClick={() => go("profile")}
-                            >
-                              Edit
-                            </button>
-                          </div>
-                          <div className="preference-tags">
-                            {activeSummary.slice(0, 3).map((p) => (
-                              <span key={p.id}>{p.label}</span>
-                            ))}
-                            {activeSummary.length > 3 && (
-                              <span>+{activeSummary.length - 3} more</span>
-                            )}
-                          </div>
-                          <button
-                            className="text-link"
-                            onClick={() => go("preferences")}
-                          >
-                            <Settings2 size={15} /> Adjust preferences
-                          </button>
+                  ) : stage === "prepare" ? (
+                    <div className="prepare">
+                      <span className="eyebrow">READY WHEN YOU ARE</span>
+                      <h1 tabIndex={-1}>
+                        A good journey
+                        <br />
+                        starts here.
+                      </h1>
+                      <div className="destination-title">
+                        <span className="round-icon">
+                          <MapPin />
+                        </span>
+                        <div>
+                          <small>YOUR DESTINATION</small>
+                          <h3>Bentonville City Square</h3>
                         </div>
-                        <button className="button full" onClick={findRoutes}>
-                          Find accessible routes <ArrowRight size={18} />
-                        </button>
-                        <div className="featured-note">
-                          <span className="pill">THE FEATURED JOURNEY</span>
-                          <h3>Discover downtown Bentonville.</h3>
-                          <p>
-                            Explore an accessibility-first journey from a
-                            simulated transit pickup to the heart of the city.
-                          </p>
-                          <div>
-                            <MapPin size={15} /> Bentonville, Arkansas
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        {state.obstacle && (
-                          <div className="reroute-notice" role="status">
-                            <CheckCircle2 size={20} />
-                            <div>
-                              <strong>A new way around.</strong>
-                              <p>
-                                Your {state.obstacle.type.toLowerCase()} report
-                                was added to this session. Route C avoids the
-                                example barrier.
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                        <div className="compact-destination">
-                          <MapPin size={18} />
+                      </div>
+                      <div className="selected-summary">
+                        <span className="pill">
+                          ROUTE {route.id} · SELECTED
+                        </span>
+                        <h3>{route.name}</h3>
+                        <div className="route-metrics">
+                          <strong>
+                            {route.distance} <small>m</small>
+                          </strong>
                           <span>
-                            Downtown pickup <ArrowRight size={13} /> City Square
+                            <Clock3 size={16} />
+                            {route.minutes} min estimate
                           </span>
                         </div>
-                        <div className="route-list">
-                          {routes
-                            .filter((r) => r.id !== "C" || state.obstacle)
-                            .sort((a, b) => {
-                              const rec = state.obstacle
-                                ? "C"
-                                : state.preferences.some((p) =>
-                                      ["slopes", "ramps", "stairs"].includes(p),
-                                    )
-                                  ? "B"
-                                  : "A";
-                              return (
-                                Number(b.id === rec) - Number(a.id === rec)
-                              );
-                            })
-                            .map((r) => {
-                              const recommended = state.obstacle
-                                ? r.id === "C"
-                                : state.preferences.includes("slopes") ||
-                                    state.preferences.includes("ramps") ||
-                                    state.preferences.includes("stairs")
-                                  ? r.id === "B"
-                                  : r.id === "A";
-                              return (
-                                <article
-                                  className={
-                                    "route-card " +
-                                    (r.id === state.selectedRoute
-                                      ? "selected"
-                                      : "")
-                                  }
-                                  key={r.id}
-                                  style={
-                                    {
-                                      "--route-order":
-                                        r.id === "A" ? 1 : r.id === "B" ? 0 : 2,
-                                    } as React.CSSProperties
-                                  }
-                                  onPointerEnter={() => setHoveredRoute(r.id)}
-                                  onPointerLeave={() => setHoveredRoute(null)}
-                                  onFocusCapture={() => setHoveredRoute(r.id)}
-                                  onBlurCapture={(e) => {
-                                    if (
-                                      !e.currentTarget.contains(
-                                        e.relatedTarget as Node,
+                        {route.features.map((f) => (
+                          <p key={f}>
+                            <Check size={16} />
+                            {f}
+                          </p>
+                        ))}
+                      </div>
+                      <h3>Before you set off</h3>
+                      <ol className="instruction-list">
+                        {route.steps.map((s) => (
+                          <li key={s}>{s}</li>
+                        ))}
+                      </ol>
+                      <div className="info">
+                        <ShieldCheck size={19} />
+                        <span>
+                          Illustrative conditions. Assess your surroundings and
+                          use your own judgment.
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="eyebrow">BENTONVILLE · YOUR JOURNEY</div>
+                      <h1 tabIndex={-1}>
+                        {stage === "routes"
+                          ? "Your way forward."
+                          : "Where to today?"}
+                      </h1>
+                      <p className="panel-intro">
+                        {stage === "routes"
+                          ? "Compare distance, comfort, and the needs you selected."
+                          : "Set your destination. Your mobility preferences come with you."}
+                      </p>
+                      {stage === "dashboard" ? (
+                        <>
+                          <DestinationSearch
+                            origin={origin}
+                            destination={destination}
+                            onOrigin={(text) => {
+                              setOrigin(text);
+                              setSearchError("");
+                            }}
+                            onDestination={(text) => {
+                              setDestination(text);
+                              setSearchError("");
+                            }}
+                            onSearch={findRoutes}
+                            onFeatured={() => {
+                              setOrigin("Downtown transit pickup");
+                              setDestination("Bentonville City Square");
+                              setSearchError("");
+                            }}
+                            error={searchError}
+                          />
+                          <div className="journey-personal">
+                            <div>
+                              <Accessibility size={19} />
+                              <strong>{profile.name}</strong>
+                              <button
+                                className="text-link"
+                                onClick={() => go("profile")}
+                              >
+                                Edit
+                              </button>
+                            </div>
+                            <div className="preference-tags">
+                              {activeSummary.slice(0, 3).map((p) => (
+                                <span key={p.id}>{p.label}</span>
+                              ))}
+                              {activeSummary.length > 3 && (
+                                <span>+{activeSummary.length - 3} more</span>
+                              )}
+                            </div>
+                            <button
+                              className="text-link"
+                              onClick={() => go("preferences")}
+                            >
+                              <Settings2 size={15} /> Adjust preferences
+                            </button>
+                          </div>
+
+                          <div className="featured-note">
+                            <span className="pill">THE FEATURED JOURNEY</span>
+                            <h3>Discover downtown Bentonville.</h3>
+                            <p>
+                              Explore an accessibility-first journey from a
+                              simulated transit pickup to the heart of the city.
+                            </p>
+                            <div>
+                              <MapPin size={15} /> Bentonville, Arkansas
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {state.obstacle && (
+                            <div className="reroute-notice" role="status">
+                              <CheckCircle2 size={20} />
+                              <div>
+                                <strong>A new way around.</strong>
+                                <p>
+                                  Your {state.obstacle.type.toLowerCase()}{" "}
+                                  report was added to this session. Route C
+                                  avoids the example barrier.
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                          <div className="compact-destination">
+                            <MapPin size={18} />
+                            <span>
+                              Downtown pickup <ArrowRight size={13} /> City
+                              Square
+                            </span>
+                          </div>
+                          <div className="route-list">
+                            {routes
+                              .filter((r) => r.id !== "C" || state.obstacle)
+                              .sort((a, b) => {
+                                const rec = state.obstacle
+                                  ? "C"
+                                  : state.preferences.some((p) =>
+                                        ["slopes", "ramps", "stairs"].includes(
+                                          p,
+                                        ),
                                       )
-                                    )
-                                      setHoveredRoute(null);
-                                  }}
-                                >
-                                  {recommended && (
-                                    <span className="recommendation">
-                                      <Sparkles size={12} />{" "}
-                                      {state.preferences.includes("distance") &&
-                                      r.id === "A"
-                                        ? "SHORTEST DISTANCE"
-                                        : "RECOMMENDED FOR YOU"}
-                                    </span>
-                                  )}
-                                  <button
-                                    className="route-select"
-                                    onClick={() =>
-                                      dispatch({ type: "route", route: r.id })
+                                    ? "B"
+                                    : "A";
+                                return (
+                                  Number(b.id === rec) - Number(a.id === rec)
+                                );
+                              })
+                              .map((r) => {
+                                const recommended = state.obstacle
+                                  ? r.id === "C"
+                                  : state.preferences.includes("slopes") ||
+                                      state.preferences.includes("ramps") ||
+                                      state.preferences.includes("stairs")
+                                    ? r.id === "B"
+                                    : r.id === "A";
+                                return (
+                                  <article
+                                    className={
+                                      "route-card " +
+                                      (r.id === state.selectedRoute
+                                        ? "selected"
+                                        : "")
                                     }
-                                    aria-pressed={r.id === state.selectedRoute}
+                                    key={r.id}
+                                    style={
+                                      {
+                                        "--route-order":
+                                          r.id === "A"
+                                            ? 1
+                                            : r.id === "B"
+                                              ? 0
+                                              : 2,
+                                      } as React.CSSProperties
+                                    }
+                                    onPointerEnter={() => setHoveredRoute(r.id)}
+                                    onPointerLeave={() => setHoveredRoute(null)}
+                                    onFocusCapture={() => setHoveredRoute(r.id)}
+                                    onBlurCapture={(e) => {
+                                      if (
+                                        !e.currentTarget.contains(
+                                          e.relatedTarget as Node,
+                                        )
+                                      )
+                                        setHoveredRoute(null);
+                                    }}
                                   >
-                                    <div className="route-card-title">
-                                      <span>ROUTE {r.id}</span>
-                                      <span className="radio-dot">
-                                        {r.id === state.selectedRoute && (
-                                          <Check size={12} />
-                                        )}
+                                    {recommended && (
+                                      <span className="recommendation">
+                                        <Sparkles size={12} />{" "}
+                                        {state.preferences.includes(
+                                          "distance",
+                                        ) && r.id === "A"
+                                          ? "SHORTEST DISTANCE"
+                                          : "RECOMMENDED FOR YOU"}
                                       </span>
-                                    </div>
-                                    <h3>{r.name}</h3>
-                                    <div className="route-metrics">
-                                      <strong>
-                                        {r.distance} <small>m</small>
-                                      </strong>
-                                      <span>
-                                        <Clock3 size={15} />
-                                        {r.minutes} min estimate
-                                      </span>
-                                    </div>
-                                    <p>{r.description}</p>
-                                    <div className="route-features">
-                                      {r.features.slice(0, 2).map((f) => (
-                                        <span key={f}>
-                                          {r.id === "A" ? (
-                                            <Flag size={13} />
-                                          ) : (
-                                            <Check size={13} />
-                                          )}{" "}
-                                          {f}
+                                    )}
+                                    <button
+                                      className="route-select"
+                                      onClick={() =>
+                                        dispatch({ type: "route", route: r.id })
+                                      }
+                                      aria-pressed={
+                                        r.id === state.selectedRoute
+                                      }
+                                    >
+                                      <div className="route-card-title">
+                                        <span>ROUTE {r.id}</span>
+                                        <span className="radio-dot">
+                                          {r.id === state.selectedRoute && (
+                                            <Check size={12} />
+                                          )}
                                         </span>
-                                      ))}
-                                    </div>
-                                  </button>
-                                  <details className="route-details">
-                                    <summary>
-                                      Pathway details <ChevronDown size={14} />
-                                    </summary>
-                                    <p>
-                                      {r.features.join(" · ")}.{" "}
-                                      {r.id === "A" &&
-                                      state.preferences.includes("slopes")
-                                        ? "Less aligned with your incline preference. "
-                                        : ""}
-                                      {r.id === "B"
-                                        ? "Recommended when step-free paths, curb ramps, or gentler inclines are prioritized. "
-                                        : ""}
-                                      {state.obstacle && r.id !== "C"
-                                        ? "This route includes the reported example barrier. "
-                                        : ""}
-                                      Crossings and curb availability are
-                                      illustrative. Surface quality, exact
-                                      slope, seating, elevators, entrances, and
-                                      construction have not been verified.
-                                    </p>
-                                  </details>
-                                </article>
-                              );
-                            })}
-                        </div>
-                        <button
-                          className="button full"
-                          onClick={() => go("prepare")}
-                        >
-                          Continue with route {state.selectedRoute}
-                          <ArrowRight size={18} />
-                        </button>
-                        <button
-                          className="report-button"
-                          onClick={() => setReportOpen(true)}
-                        >
-                          <Flag size={16} /> Report an example barrier
-                        </button>
-                      </>
-                    )}
-                  </>
-                )}
-                <div className="scenario-disclaimer">
-                  <ShieldCheck size={14} />
-                  <span>
-                    Featured scenario. Distances, travel times, and
-                    accessibility conditions are illustrative, not verified
-                    guidance.
-                  </span>
+                                      </div>
+                                      <h3>{r.name}</h3>
+                                      <div className="route-metrics">
+                                        <strong>
+                                          {r.distance} <small>m</small>
+                                        </strong>
+                                        <span>
+                                          <Clock3 size={15} />
+                                          {r.minutes} min estimate
+                                        </span>
+                                      </div>
+                                      <p>{r.description}</p>
+                                      <div className="route-features">
+                                        {r.features.slice(0, 2).map((f) => (
+                                          <span key={f}>
+                                            {r.id === "A" ? (
+                                              <Flag size={13} />
+                                            ) : (
+                                              <Check size={13} />
+                                            )}{" "}
+                                            {f}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </button>
+                                    <details className="route-details">
+                                      <summary>
+                                        Pathway details{" "}
+                                        <ChevronDown size={14} />
+                                      </summary>
+                                      <p>
+                                        {r.features.join(" · ")}.{" "}
+                                        {r.id === "A" &&
+                                        state.preferences.includes("slopes")
+                                          ? "Less aligned with your incline preference. "
+                                          : ""}
+                                        {r.id === "B"
+                                          ? "Recommended when step-free paths, curb ramps, or gentler inclines are prioritized. "
+                                          : ""}
+                                        {state.obstacle && r.id !== "C"
+                                          ? "This route includes the reported example barrier. "
+                                          : ""}
+                                        Crossings and curb availability are
+                                        illustrative. Surface quality, exact
+                                        slope, seating, elevators, entrances,
+                                        and construction have not been verified.
+                                      </p>
+                                    </details>
+                                  </article>
+                                );
+                              })}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
+                  <div className="scenario-disclaimer">
+                    <ShieldCheck size={14} />
+                    <span>
+                      Featured scenario. Distances, travel times, and
+                      accessibility conditions are illustrative, not verified
+                      guidance.
+                    </span>
+                  </div>
                 </div>
+                {["dashboard", "routes", "prepare"].includes(stage) && (
+                  <div className="journey-action-dock">
+                    {stage !== "dashboard" && (
+                      <div className="dock-route-summary">
+                        <span>
+                          <span className="dock-route-dot" />
+                          Route {state.selectedRoute} selected
+                        </span>
+                        <strong>
+                          {route.distance} m <span>· {route.minutes} min</span>
+                        </strong>
+                      </div>
+                    )}
+                    <button
+                      className="button full"
+                      onClick={
+                        stage === "dashboard"
+                          ? findRoutes
+                          : () =>
+                              go(stage === "routes" ? "prepare" : "navigation")
+                      }
+                    >
+                      {stage === "dashboard"
+                        ? "Find accessible routes"
+                        : stage === "routes"
+                          ? `Continue with route ${state.selectedRoute}`
+                          : "Start navigation preview"}
+                      <ArrowRight size={18} />
+                    </button>
+                    {stage === "routes" && (
+                      <button
+                        className="dock-report"
+                        onClick={() => setReportOpen(true)}
+                      >
+                        <Flag size={14} />
+                        Report an example barrier
+                      </button>
+                    )}
+                    {stage === "prepare" && (
+                      <span className="dock-note">
+                        Visual walkthrough · manual controls available
+                      </span>
+                    )}
+                  </div>
+                )}
               </aside>
               <div className="map-area">
                 {stage === "processing" && (
@@ -839,8 +872,11 @@ export default function App() {
                     <MapPin size={18} />
                   </span>
                   <div>
-                    <strong>Your world, more accessible.</strong>
-                    <small>Bentonville City Square · Featured journey</small>
+                    <strong>Bentonville City Square</strong>
+                    <small>
+                      Downtown pickup <span aria-hidden="true">→</span> City
+                      Square
+                    </small>
                   </div>
                 </div>
                 <div className="map-bottom-card">
@@ -848,8 +884,16 @@ export default function App() {
                     <ShieldCheck size={22} />
                   </span>
                   <div>
-                    <strong>Built around your mobility.</strong>
-                    <small>Your preferences guide the route comparison.</small>
+                    <strong>
+                      {stage === "dashboard"
+                        ? "Your mobility, remembered."
+                        : `Route ${state.selectedRoute} · ${route.distance} m`}
+                    </strong>
+                    <small>
+                      {stage === "dashboard"
+                        ? profile.name
+                        : `${route.minutes} min estimate · ${profile.name}`}
+                    </small>
                   </div>
                 </div>
               </div>

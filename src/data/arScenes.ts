@@ -145,7 +145,7 @@ export function getARScenes(routeId: ARRouteId, resumeProgress = 0): ARScene[] {
                 {
                   id: "sample-obstacle",
                   type: "construction",
-                  point: { x: 0.55, y: 0.63 },
+                  point: { x: 0.39, y: 0.77 },
                   label: "Example obstruction ahead",
                   detail: "Scripted reporting opportunity",
                   from: 1,
@@ -175,7 +175,20 @@ export function getARScenes(routeId: ARRouteId, resumeProgress = 0): ARScene[] {
                       preference: "smooth",
                     },
                   ]
-                : [],
+                : id === "alternative"
+                  ? [
+                      {
+                        id: "rest-stop",
+                        type: "rest",
+                        point: { x: 0.72, y: 0.92 },
+                        label: "Rest-stop example",
+                        detail: "Illustrative stop · availability not verified",
+                        from: 2,
+                        until: 6,
+                        preference: "seating",
+                      },
+                    ]
+                  : [],
     };
   });
 }

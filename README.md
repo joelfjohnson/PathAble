@@ -20,7 +20,7 @@ npm run lint
 npm test
 ```
 
-`npm test` uses Playwright and the locally installed Google Chrome on macOS. Start the development server on `127.0.0.1:5173` first. Change `executablePath` in `playwright.config.ts` for other environments. Production output is `dist/`; deploy it to Vercel with Vite's default settings. No API keys or backend are required.
+`npm test` uses Playwright, discovers Edge or Chrome on Windows and Chrome on macOS, and otherwise uses a Playwright-managed browser. Start the development server on `127.0.0.1:5173` first. Set `PATHABLE_BROWSER_PATH` to override the executable. See `FIRST-DRAFT-RUNBOOK.md` for the supported recording sequence. Production output is `dist/`; deploy it to Vercel with Vite's default settings. No API keys or backend are required.
 
 ## Featured journey
 

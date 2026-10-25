@@ -20,3 +20,31 @@ No Google Street View imagery has been extracted or republished. Replace these r
 `thumbnails/transit.png` and `videos/transit-study.mp4` derive solely from the original transit illustration. The eight-second clip is a static illustration study with browser-rendered overlays and camera movement, not captured travel footage. Reproduce these assets with `scripts/create-illustrative-scenes.mjs` and `scripts/prepare-transit-video.mjs`.
 
 Scene media, camera settings, and ground-path coordinates are configurable in `src/data/arVisuals.ts`. The historical reference remains separately credited above and appears only in the curb-reference and destination scenes.
+
+# Additional square views
+
+These historical reference views are not continuous footage of the route. No current accessibility is inferred from them.
+
+## Hotel Massey.jpg
+- Author: Brandonrush
+- Source: https://commons.wikimedia.org/wiki/File:Hotel_Massey.jpg
+- License: CC BY-SA 3.0 — https://creativecommons.org/licenses/by-sa/3.0
+- Changes: resized, animated framing, illustrative overlays. Adapted imagery remains under its source license.
+
+## Terry Block Building.jpg
+- Author: Brandonrush
+- Source: https://commons.wikimedia.org/wiki/File:Terry_Block_Building.jpg
+- License: CC BY-SA 3.0 — https://creativecommons.org/licenses/by-sa/3.0
+- Changes: resized, animated framing, illustrative overlays. Adapted imagery remains under its source license.
+
+## Roy's Office Supply Building.jpg
+- Author: Brandonrush
+- Source: https://commons.wikimedia.org/wiki/File:Roy%27s_Office_Supply_Building.jpg
+- License: CC BY-SA 3.0 — https://creativecommons.org/licenses/by-sa/3.0
+- Changes: resized, animated framing, illustrative overlays. Adapted imagery remains under its source license.
+
+## Walton five and dime Bentonville AR (14292373504).jpg
+- Author: Russ
+- Source: https://commons.wikimedia.org/wiki/File:Walton_five_and_dime_Bentonville_AR_(14292373504).jpg
+- License: CC BY 2.0 — https://creativecommons.org/licenses/by/2.0
+- Changes: resized, animated framing, illustrative overlays. Adapted imagery remains under its source license.

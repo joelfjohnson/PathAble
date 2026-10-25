@@ -118,9 +118,9 @@ export default function ARSettingsDialog({
                 {scene.media.credit.license} · adapted reference
               </a>
               <small>
-                {scene.media.credit.changes} The reference video is a
-                still-photo clip, not walking footage. This historical
-                photograph does not show every route segment.
+                {scene.media.credit.changes} These historical views show
+                landmarks around the square, not a continuous first-person
+                recording of Route B or C. Camera movement is simulated.
               </small>
             </>
           )}

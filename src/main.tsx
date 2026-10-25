@@ -10,6 +10,7 @@ import "@fontsource/sora/latin-600.css";
 import "./styles.css";
 import "./styles/ar.css";
 import "./styles/premium.css";
+import "./styles/first-draft.css";
 import App from "./App";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

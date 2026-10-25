@@ -86,6 +86,8 @@ export default function ARSceneRenderer({
   );
   const [size, setSize] = useState({ width: 1, height: 1 });
   const [failed, setFailed] = useState(false);
+  const [posterFailed, setPosterFailed] = useState(false);
+  const [videoVisible, setVideoVisible] = useState(false);
   const [dimensions, setDimensions] = useState({
     width: scene.media.width,
     height: scene.media.height,
@@ -180,10 +182,31 @@ export default function ARSceneRenderer({
     dimensions.width,
     dimensions.height,
   );
+  // Preserve the ground in wide viewports instead of cropping away the sidewalk.
+  plane.top = size.height - plane.height;
   const mediaFailure = () => {
     setFailed(true);
     onMediaStatus(scene.id, false, true);
   };
+  useEffect(() => {
+    if (scene.media.type !== "video" || failed) return;
+    const video = box.current?.querySelector("video");
+    if (!video) return;
+    let lastTime = video.currentTime;
+    let stalledFor = 0;
+    const timer = window.setInterval(() => {
+      const stalled =
+        video.readyState < 2 ||
+        (playing && !video.paused && video.currentTime === lastTime);
+      stalledFor = stalled ? stalledFor + 1 : 0;
+      lastTime = video.currentTime;
+      if (stalledFor >= 5) {
+        setFailed(true);
+        onMediaStatus(scene.id, false, true);
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [scene.id, scene.media.type, failed, playing, onMediaStatus]);
   const progress = clamp(elapsed / scene.durationSeconds);
   const cameraScale = reduced
     ? 1
@@ -218,17 +241,36 @@ export default function ARSceneRenderer({
             top: plane.top,
           }}
         >
+          {scene.media.type === "video" && !failed && scene.media.poster && (
+            <img
+              className="ar-scene-poster"
+              src={scene.media.poster}
+              alt=""
+              aria-hidden="true"
+            />
+          )}
           {failed ? (
-            <NeutralScene sceneId={scene.id} />
+            scene.media.poster && !posterFailed ? (
+              <img
+                className="ar-scene-media"
+                src={scene.media.poster}
+                alt={scene.media.alt}
+                onError={() => setPosterFailed(true)}
+              />
+            ) : (
+              <NeutralScene sceneId={scene.id} />
+            )
           ) : scene.media.type === "video" ? (
             <video
               ref={attachVideo}
+              style={{ opacity: videoVisible ? 1 : 0 }}
+              onLoadedData={() => setVideoVisible(true)}
               className="ar-scene-media"
               src={scene.media.src}
               poster={scene.media.poster}
               muted
               playsInline
-              preload="metadata"
+              preload="auto"
               aria-label={scene.media.alt}
               onLoadedMetadata={(e) => {
                 setDimensions({
@@ -288,13 +330,13 @@ export default function ARSceneRenderer({
           {failed
             ? "Illustrative scene · media unavailable"
             : scene.media.isReference
-              ? "Bentonville reference photo · 2013"
+              ? `Bentonville · ${scene.locationLabel}`
               : `Illustrative viewpoint · ${scene.locationLabel}`}
         </strong>
         <span>
           {failed
             ? "The walkthrough continues with a neutral visual."
-            : "Scripted overlay · no live location tracking"}
+            : "Historical imagery · simulated navigation"}
         </span>
       </div>
     </div>
