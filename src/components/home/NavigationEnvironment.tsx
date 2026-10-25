@@ -19,6 +19,11 @@ export default function NavigationEnvironment() {
     <div ref={node} className="navigation-environment" aria-hidden="true">
       <div className="ambient-light light-a" />
       <div className="ambient-light light-b" />
+      <div className="ambient-light light-c" />
+      <div className="env-grid" />
+      <div className="env-orbit orbit-a" />
+      <div className="env-orbit orbit-b" />
+      <div className="env-sweep" />
       <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
         <defs>
           <linearGradient id="environment-path">
@@ -52,8 +57,13 @@ export default function NavigationEnvironment() {
       </svg>
       <i className="route-particle particle-a" />
       <i className="route-particle particle-b" />
+      {Array.from({ length: 18 }, (_, i) => (
+        <i key={i} className={`micro-particle micro-${i + 1}`} />
+      ))}
       <span className="floating-shape shape-ring" />
       <span className="floating-shape shape-diamond" />
+      <span className="floating-shape shape-cross" />
+      <span className="floating-shape shape-orb" />
     </div>
   );
 }

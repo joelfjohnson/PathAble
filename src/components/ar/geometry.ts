@@ -104,12 +104,22 @@ export function coverTransform(
   viewHeight: number,
   mediaWidth: number,
   mediaHeight: number,
+  focusX = 0.5,
+  focusY = 0.5,
 ) {
   const scale = Math.max(viewWidth / mediaWidth, viewHeight / mediaHeight);
   return {
     width: mediaWidth * scale,
     height: mediaHeight * scale,
-    left: (viewWidth - mediaWidth * scale) / 2,
-    top: (viewHeight - mediaHeight * scale) / 2,
+    left: clamp(
+      viewWidth / 2 - mediaWidth * scale * focusX,
+      viewWidth - mediaWidth * scale,
+      0,
+    ),
+    top: clamp(
+      viewHeight / 2 - mediaHeight * scale * focusY,
+      viewHeight - mediaHeight * scale,
+      0,
+    ),
   };
 }

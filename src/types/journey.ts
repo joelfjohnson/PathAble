@@ -70,6 +70,7 @@ export type JourneyAction =
       control: ARControl;
       elapsed?: number;
       expectedSceneIndex?: number;
+      sceneIndex?: number;
     }
   | { type: "ar-tick"; elapsed: number; expectedSceneIndex: number }
   | { type: "ar-reroute-ready" }

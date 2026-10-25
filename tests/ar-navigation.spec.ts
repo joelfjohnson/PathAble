@@ -1,5 +1,88 @@
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+
+test("licensed downtown scenes stay distinct, camera-aligned, seekable and credited", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await enterAR(page);
+  await page.getByRole("button", { name: "Start AR journey" }).click();
+  await page.getByRole("button", { name: "Pause journey" }).click();
+  const sources = new Set<string>();
+  for (let index = 0; index < 5; index++) {
+    await page.locator(".ar-scene-rail button").nth(index).click();
+    await expect(
+      page.locator(".ar-scene-rail button").nth(index),
+    ).toHaveAttribute("aria-current", "step");
+    await expect
+      .poll(() =>
+        page
+          .locator(".ar-scene-media")
+          .last()
+          .evaluate((element) =>
+            element instanceof HTMLImageElement
+              ? element.complete && element.naturalWidth > 0
+              : (element as HTMLVideoElement).readyState >= 2,
+          ),
+      )
+      .toBe(true);
+    const source = await page
+      .locator(".ar-scene-media")
+      .last()
+      .getAttribute("src");
+    expect(source).toMatch(/^\/ar\/bentonville\//);
+    sources.add(source!);
+    await expect(page.getByRole("slider")).toHaveValue("0");
+  }
+  expect(sources.size).toBe(5);
+  await page.locator(".ar-scene-rail button").nth(2).click();
+  await seek(page, 2);
+  await expect(page.locator(".ar-scene-layer")).toHaveCount(1);
+  await page.screenshot({
+    path: testInfo.outputPath("licensed-ar-desktop.png"),
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({
+    path: testInfo.outputPath("licensed-ar-mobile.png"),
+  });
+  await expect(page.locator("body")).toHaveJSProperty("scrollWidth", 390);
+  await page.getByRole("button", { name: "Navigation settings" }).click();
+  await expect(page.getByRole("dialog")).toContainText(
+    "Eight real downtown Bentonville photographs",
+  );
+  await expect(
+    page.getByRole("dialog").getByRole("link", { name: /CC BY-SA 3.0/ }),
+  ).toHaveAttribute("href", "https://creativecommons.org/licenses/by-sa/3.0/");
+  await page.getByRole("button", { name: "Return to journey" }).click();
+  await page
+    .getByRole("button", { name: "Report obstacle", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Add report & find alternative" })
+    .click();
+  await expect(page.locator(".ar-reroute-transition")).toHaveCount(0);
+  await expect(page.locator(".ar-route-chip")).toHaveText("ROUTE C");
+  for (let index = 0; index < 4; index++) {
+    await page.locator(".ar-scene-rail button").nth(index).click();
+    await expect
+      .poll(() =>
+        page
+          .locator(".ar-scene-media")
+          .last()
+          .evaluate(
+            (element) =>
+              element instanceof HTMLImageElement &&
+              element.complete &&
+              element.naturalWidth > 0,
+          ),
+      )
+      .toBe(true);
+    sources.add(
+      (await page.locator(".ar-scene-media").last().getAttribute("src"))!,
+    );
+  }
+  expect(sources.size).toBe(8);
+});
 async function enterAR(page: Page) {
   await page.goto("/");
   await page
@@ -161,10 +244,7 @@ test("mobile AR, media fallback, reduced motion and refresh recovery", async ({
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.route("**/ar/videos/**", (route) => route.abort());
-  await page.route("**/ar/scenes/bentonville-square.webp", (route) =>
-    route.abort(),
-  );
+  await page.route("**/ar/bentonville/**", (route) => route.abort());
   await enterAR(page);
   await page.getByRole("button", { name: "Start AR journey" }).click();
   await expect(
@@ -216,11 +296,14 @@ test("frame-callback fallback, unsupported voice, map failure and autoplay recov
       configurable: true,
     });
     const original = HTMLMediaElement.prototype.play;
+    let blocked = false;
     HTMLMediaElement.prototype.play = function () {
-      if (this.classList.contains("ar-scene-media"))
+      if (this.classList.contains("ar-scene-media") && !blocked) {
+        blocked = true;
         return Promise.reject(
           new DOMException("Blocked for test", "NotAllowedError"),
         );
+      }
       return original.call(this);
     };
   });

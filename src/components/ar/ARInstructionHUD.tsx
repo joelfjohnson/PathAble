@@ -11,13 +11,22 @@ export default function ARInstructionHUD({
   index,
   total,
   routeId,
+  elapsed = 0,
 }: {
   scene: ARScene;
   index: number;
   total: number;
   routeId: string;
+  elapsed?: number;
 }) {
   const Icon = icons[scene.turn];
+  const distance = scene.distanceLabel.match(/about (\d+) m/);
+  const distanceLabel = distance
+    ? scene.distanceLabel.replace(
+        `about ${distance[1]} m`,
+        `about ${Math.max(5, Math.round((Number(distance[1]) * (1 - Math.min(1, elapsed / scene.durationSeconds))) / 5) * 5)} m`,
+      )
+    : scene.distanceLabel;
   return (
     <div className="ar-instruction-hud" aria-live="polite" aria-atomic="true">
       <span className="ar-direction-icon">
@@ -28,8 +37,8 @@ export default function ARInstructionHUD({
           ROUTE {routeId} <span>·</span> STEP {index + 1} OF {total}
         </div>
         <h2 tabIndex={-1}>{scene.instruction}</h2>
-        <p>
-          {scene.distanceLabel} <span>· illustrative</span>
+        <p aria-live="off">
+          {distanceLabel} <span>· illustrative</span>
         </p>
       </div>
     </div>

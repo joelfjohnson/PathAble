@@ -210,14 +210,28 @@ export function journeyReducer(
             resumeAfterReroute: ar.rerouting ? true : ar.resumeAfterReroute,
           },
         };
-      if (action.control === "seek")
+      if (action.control === "seek") {
+        const targetIndex =
+          action.sceneIndex === undefined
+            ? ar.sceneIndex
+            : Math.round(clamp(action.sceneIndex, 0, scenes.length - 1));
         return {
           ...state,
+          currentStep: Math.min(
+            targetIndex,
+            routes.find((r) => r.id === state.selectedRoute)!.steps.length - 1,
+          ),
           ar: {
             ...ar,
-            elapsed: clamp(action.elapsed ?? 0, 0, scene.durationSeconds),
+            sceneIndex: targetIndex,
+            elapsed: clamp(
+              action.elapsed ?? 0,
+              0,
+              scenes[targetIndex].durationSeconds,
+            ),
           },
         };
+      }
       const index =
         action.control === "next"
           ? ar.sceneIndex + 1

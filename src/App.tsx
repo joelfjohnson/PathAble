@@ -32,6 +32,7 @@ import JourneyProgress from "./components/JourneyProgress";
 import { solveRoute, supportedPreferences, routeDistance } from "./lib/routing";
 import "./styles/finish.css";
 import "./styles/atlas.css";
+import "./styles/studio.css";
 
 import { transitionJourney } from "./components/motion/transitionJourney";
 const ARNavigationPage = lazy(() => import("./pages/RouteNavigation"));

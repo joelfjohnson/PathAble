@@ -1,5 +1,12 @@
-import { useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { useRef, useState } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useMotionValue,
+  useSpring,
+  useScroll,
+  useInView,
+} from "motion/react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -10,6 +17,8 @@ import {
   Plus,
   Flag,
   ArrowDown,
+  Pause,
+  Play,
 } from "lucide-react";
 import Brand from "../components/Brand";
 import { routes } from "../data/journey";
@@ -35,8 +44,8 @@ function RoutePreview({ accessible }: { accessible: boolean }) {
           : "Shorter route through the modeled stair segment"
       }
     >
-      <rect width="640" height="520" fill="#eeeee7" />
-      <g fill="#e3e3da" stroke="#d8d9ce" strokeWidth="1">
+      <rect width="640" height="520" fill="#eeedf7" />
+      <g fill="#dfdeed" stroke="#d3d1e5" strokeWidth="1">
         {[105, 284, 475].flatMap((x) =>
           [36, 177, 306, 440].map((y) => (
             <rect
@@ -162,6 +171,15 @@ export default function Home({
 }) {
   const [accessible, setAccessible] = useState(true);
   const reduced = useReducedMotion();
+  const [effectsPaused, setEffectsPaused] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+  const heroVisible = useInView(heroRef, { margin: "100px" });
+  const { scrollYProgress } = useScroll();
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const tiltX = useSpring(rotateX, { stiffness: 100, damping: 24 });
+  const tiltY = useSpring(rotateY, { stiffness: 100, damping: 24 });
+  const motionOff = !!reduced || effectsPaused;
   const reveal = {
     initial: { opacity: reduced ? 1 : 0, y: reduced ? 0 : 24 },
     whileInView: { opacity: 1, y: 0 },
@@ -170,7 +188,16 @@ export default function Home({
   };
   const previewRoute = routes[accessible ? 1 : 0];
   return (
-    <div className="atlas-home" id="top">
+    <div
+      className="atlas-home"
+      id="top"
+      data-effects-paused={motionOff || !heroVisible}
+    >
+      <motion.div
+        className="studio-scroll-progress"
+        style={{ scaleX: scrollYProgress }}
+        aria-hidden="true"
+      />
       <a href="#main" className="atlas-skip">
         Skip to content
       </a>
@@ -188,12 +215,51 @@ export default function Home({
           <a href="#local">Our starting point</a>
           <a href="#questions">Questions</a>
         </nav>
+        <button
+          className="studio-motion-toggle"
+          aria-label={
+            effectsPaused
+              ? "Enable background animation"
+              : "Pause background animation"
+          }
+          aria-pressed={effectsPaused}
+          onClick={() => setEffectsPaused((v) => !v)}
+        >
+          {effectsPaused ? <Play size={16} /> : <Pause size={16} />}
+        </button>
         <button className="atlas-link-button" onClick={start}>
           Open PathAble <ArrowUpRight size={18} />
         </button>
       </header>
       <main id="main">
-        <section className="atlas-hero">
+        <section className="atlas-hero" ref={heroRef}>
+          <div className="studio-atmosphere" aria-hidden="true">
+            <div className="studio-orb studio-orb-one" />
+            <div className="studio-orb studio-orb-two" />
+            <svg viewBox="0 0 1400 850" preserveAspectRatio="xMidYMid slice">
+              <path
+                className="studio-route-base"
+                d="M-100 680H280Q350 680 350 610V380Q350 320 410 320H850Q920 320 920 250V120H1500"
+              />
+              <path
+                className="studio-route-trace"
+                d="M-100 680H280Q350 680 350 610V380Q350 320 410 320H850Q920 320 920 250V120H1500"
+              />
+              <circle cx="350" cy="610" r="8" />
+              <circle cx="920" cy="250" r="8" />
+              <circle cx="1140" cy="120" r="5" />
+            </svg>
+            {Array.from({ length: 12 }, (_, i) => (
+              <i
+                key={i}
+                style={{
+                  left: `${8 + ((i * 29) % 85)}%`,
+                  top: `${12 + ((i * 17) % 75)}%`,
+                  animationDelay: `${i * -0.7}s`,
+                }}
+              />
+            ))}
+          </div>
           <motion.div className="atlas-hero-copy" {...reveal}>
             <div className="atlas-kicker">
               <span /> BENTONVILLE, ARKANSAS
@@ -224,6 +290,25 @@ export default function Home({
           </motion.div>
           <motion.div
             className="atlas-preview"
+            style={{
+              rotateX: motionOff ? 0 : tiltX,
+              rotateY: motionOff ? 0 : tiltY,
+              transformPerspective: 1200,
+            }}
+            onPointerMove={(event) => {
+              if (motionOff || event.pointerType !== "mouse") return;
+              const bounds = event.currentTarget.getBoundingClientRect();
+              rotateX.set(
+                (0.5 - (event.clientY - bounds.top) / bounds.height) * 5,
+              );
+              rotateY.set(
+                ((event.clientX - bounds.left) / bounds.width - 0.5) * 5,
+              );
+            }}
+            onPointerLeave={() => {
+              rotateX.set(0);
+              rotateY.set(0);
+            }}
             {...reveal}
             transition={{ duration: 0.65, delay: 0.12 }}
           >
@@ -313,7 +398,10 @@ export default function Home({
             </p>
           </motion.div>
           <div className="atlas-feature-grid">
-            <motion.article {...reveal}>
+            <motion.article
+              {...reveal}
+              transition={{ duration: 0.55, delay: reduced ? 0 : 0.05 }}
+            >
               <div className="atlas-feature-top">
                 <span>01</span>
                 <Accessibility />
@@ -345,7 +433,10 @@ export default function Home({
                 ))}
               </div>
             </motion.article>
-            <motion.article {...reveal}>
+            <motion.article
+              {...reveal}
+              transition={{ duration: 0.55, delay: reduced ? 0 : 0.15 }}
+            >
               <div className="atlas-feature-top">
                 <span>02</span>
                 <Navigation />
@@ -364,7 +455,10 @@ export default function Home({
                 </div>
               </div>
             </motion.article>
-            <motion.article {...reveal}>
+            <motion.article
+              {...reveal}
+              transition={{ duration: 0.55, delay: reduced ? 0 : 0.25 }}
+            >
               <div className="atlas-feature-top">
                 <span>03</span>
                 <Flag />

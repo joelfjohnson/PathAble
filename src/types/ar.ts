@@ -49,9 +49,20 @@ export interface ARScene {
       changes: string;
     };
     isReference: boolean;
+    sourceLabel?: string;
+    captureDate?: string;
+    /** Photo studies move together with guidance; captured video does not. */
+    photographicStudy?: boolean;
+    preserveFullFrame?: boolean;
   };
   durationSeconds: number;
-  camera?: { zoom?: number; panX?: number; panY?: number };
+  camera?: {
+    zoom?: number;
+    panX?: number;
+    panY?: number;
+    focusX?: number;
+    focusY?: number;
+  };
   pathPoints: Point[];
   pathKeyframes?: PathKeyframe[];
   indicators: ARIndicator[];

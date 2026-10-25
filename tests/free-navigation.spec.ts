@@ -41,6 +41,18 @@ test("free navigation complete journey and report reroute", async ({
     .getByRole("button", { name: "Next direction", exact: true })
     .click();
   await expect(page.locator(".instruction-card")).toContainText("STEP 2");
+  await page.getByRole("button", { name: "View AR navigation" }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Follow your route." }),
+  ).toBeVisible();
+  await expect(page.locator("video.ar-preview-video")).toHaveAttribute(
+    "src",
+    "/ar/videos/PathAble_AR_Navigation_FINAL.mp4",
+  );
+  await page
+    .getByRole("button", { name: "Close AR navigation preview" })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page.locator(".map-tile-loading")).toHaveCount(0, {
     timeout: 30000,
   });
