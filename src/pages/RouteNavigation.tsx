@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -7,9 +7,9 @@ import {
   ExternalLink,
   Volume2,
   ScanLine,
-  X,
 } from "lucide-react";
 import MapView from "../components/MapView";
+import ImmersiveARPreview from "../components/ar/ImmersiveARPreview";
 import { routes } from "../data/journey";
 import {
   routeInstructions,
@@ -54,14 +54,6 @@ export default function RouteNavigation({
     const delta = ((steps[i].heading - steps[i - 1].heading + 540) % 360) - 180;
     return `${Math.abs(delta) < 30 ? "Continue" : delta > 0 ? "Turn right" : "Turn left"} onto ${steps[i].street}`;
   };
-  useEffect(() => {
-    if (!arOpen) return;
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setArOpen(false);
-    };
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, [arOpen]);
   return (
     <section className="route-navigation" aria-label="Route navigation">
       <header className="navigation-top">
@@ -210,58 +202,17 @@ export default function RouteNavigation({
         </div>
       </div>
       {arOpen && (
-        <div
-          className="ar-preview-backdrop"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setArOpen(false);
+        <ImmersiveARPreview
+          route={route}
+          profile={state.profile}
+          obstacle={!!state.obstacle}
+          onClose={() => setArOpen(false)}
+          onReport={() => onReport(true)}
+          onArrive={() => {
+            setArOpen(false);
+            dispatch({ type: "stage", stage: "arrived" });
           }}
-        >
-          <section
-            className="ar-preview-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="ar-preview-title"
-          >
-            <header>
-              <div>
-                <span>PATHABLE AR NAVIGATION · BENTONVILLE</span>
-                <h2 id="ar-preview-title">Follow your route.</h2>
-                <p>
-                  Navigate toward Bentonville City Square with PathAble’s purple
-                  guidance layer.
-                </p>
-              </div>
-              <button
-                className="ar-preview-close"
-                aria-label="Close AR navigation preview"
-                onClick={() => setArOpen(false)}
-              >
-                <X size={20} />
-              </button>
-            </header>
-            <div className="ar-preview-video-wrap">
-              <video
-                className="ar-preview-video"
-                src="/ar/videos/PathAble_AR_Navigation_FINAL.mp4"
-                controls
-                playsInline
-                preload="metadata"
-                aria-label="PathAble augmented reality navigation preview"
-              />
-              <div className="ar-preview-badge" aria-hidden="true">
-                <ScanLine size={16} /> AR NAVIGATION
-              </div>
-            </div>
-            <footer>
-              <span>Route {route.id} · Bentonville City Square</span>
-              <small>
-                Featured journey preview · camera and GPS tracking are not
-                active.
-              </small>
-            </footer>
-          </section>
-        </div>
+        />
       )}
     </section>
   );

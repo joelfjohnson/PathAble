@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-export default function InteractiveCursor() {
+export default function InteractiveCursor({
+  disabled = false,
+}: {
+  disabled?: boolean;
+}) {
   const node = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
   useEffect(() => {
@@ -15,7 +19,7 @@ export default function InteractiveCursor() {
     };
   }, []);
   useEffect(() => {
-    if (!enabled || !node.current) return;
+    if (!enabled || disabled || !node.current) return;
     const el = node.current;
     let x = 0,
       y = 0,
@@ -73,8 +77,8 @@ export default function InteractiveCursor() {
       window.removeEventListener("blur", leave);
       document.documentElement.removeEventListener("pointerleave", leave);
     };
-  }, [enabled]);
-  return enabled ? (
+  }, [enabled, disabled]);
+  return enabled && !disabled ? (
     <div ref={node} className="interactive-cursor" aria-hidden="true">
       <i />
     </div>

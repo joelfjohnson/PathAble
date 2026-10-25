@@ -43,16 +43,48 @@ test("free navigation complete journey and report reroute", async ({
   await expect(page.locator(".instruction-card")).toContainText("STEP 2");
   await page.getByRole("button", { name: "View AR navigation" }).click();
   await expect(
-    page.getByRole("dialog", { name: "Follow your route." }),
+    page.getByRole("dialog", { name: "PathAble AR navigation" }),
   ).toBeVisible();
-  await expect(page.locator("video.ar-preview-video")).toHaveAttribute(
+  await expect(page.locator(".immersive-ar-loading")).toBeVisible();
+  await expect(page.locator("video.immersive-ar-video")).toHaveAttribute(
     "src",
     "/ar/videos/PathAble_AR_Navigation_FINAL.mp4",
   );
+  await expect(page.locator("video.immersive-ar-video")).not.toHaveAttribute(
+    "controls",
+    "",
+  );
+  await expect(page.locator(".immersive-ar.is-active")).toBeVisible({
+    timeout: 10000,
+  });
+  await expect(
+    page.getByRole("button", { name: "Report an obstacle" }),
+  ).toBeVisible();
+  const pauseNavigation = page.getByRole("button", {
+    name: "Pause navigation",
+  });
+  if (await pauseNavigation.count()) await pauseNavigation.click();
+  await expect(
+    page.getByRole("button", { name: "Start navigation", exact: true }),
+  ).toBeVisible();
   await page
-    .getByRole("button", { name: "Close AR navigation preview" })
+    .getByRole("button", { name: "Report an obstacle" })
+    .click();
+  await expect(
+    page.getByRole("dialog", { name: "Help clear the way." }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: /Add report & find alternative/ })
+    .click();
+  await expect(page.locator(".immersive-ar-reroute")).toContainText(
+    "Route updated",
+  );
+  await expect(page.locator(".immersive-ar-topbar")).toContainText("Route C");
+  await page
+    .getByRole("button", { name: "Close AR navigation" })
     .click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.locator(".navigation-top")).toContainText("Route C");
   await expect(page.locator(".map-tile-loading")).toHaveCount(0, {
     timeout: 30000,
   });
@@ -61,14 +93,6 @@ test("free navigation complete journey and report reroute", async ({
     path: "tests/free-navigation-desktop.png",
     fullPage: true,
   });
-  await page
-    .getByRole("button", { name: "Report a barrier", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: /Add report & find alternative/ })
-    .click();
-  await expect(page.locator(".reroute-notice")).toBeVisible();
-  await expect(page.locator(".navigation-top")).toContainText("Route C");
   await page.reload();
   await expect(page.locator(".navigation-top")).toContainText("Route C");
   while (

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-export function useSurfaceMotion(stage: string) {
+export function useSurfaceMotion(stage: string, enabled = true) {
   useEffect(() => {
+    if (!enabled) return;
     const fine = matchMedia("(hover:hover) and (pointer:fine)"),
       reduced = matchMedia("(prefers-reduced-motion:reduce)");
     let card: HTMLElement | null = null,
@@ -17,7 +18,7 @@ export function useSurfaceMotion(stage: string) {
       if (!fine.matches || reduced.matches || e.pointerType === "touch") return;
       const target = e.target as HTMLElement;
       const next = target.closest<HTMLElement>(
-        ".profile-card,.route-card,.preview-profile,.story-glass",
+        ".profile-card,.route-card,.preview-profile,.story-glass,.atlas-feature-grid article",
       );
       if (card !== next) {
         card?.style.setProperty("--tilt-x", "0deg");
@@ -33,7 +34,9 @@ export function useSurfaceMotion(stage: string) {
         card.style.setProperty("--light-x", `${x * 100}%`);
         card.style.setProperty("--light-y", `${y * 100}%`);
       }
-      const button = target.closest<HTMLElement>(".home [data-magnetic]");
+      const button = target.closest<HTMLElement>(
+        ".home [data-magnetic],.atlas-home [data-magnetic]",
+      );
       if (magnetic !== button) {
         magnetic?.style.setProperty("--mag-x", "0px");
         magnetic?.style.setProperty("--mag-y", "0px");
@@ -63,5 +66,5 @@ export function useSurfaceMotion(stage: string) {
       document.removeEventListener("pointerout", out);
       window.removeEventListener("blur", reset);
     };
-  }, [stage]);
+  }, [stage, enabled]);
 }

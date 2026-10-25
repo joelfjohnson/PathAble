@@ -14,7 +14,7 @@ test("keyboard, modal focus, and WCAG checks", async ({ page }) => {
       page.getByRole("heading", {
         name: (
           {
-            home: "Navigation without barriers.",
+            home: "Navigation Without Barriers",
             profile: "How do you prefer to travel?",
             preferences: "Your journey, your needs.",
             dashboard: "Where to today?",
@@ -68,7 +68,7 @@ test("keyboard, modal focus, and WCAG checks", async ({ page }) => {
       ).toBeVisible();
     }
   }
-  await page.getByRole("button", { name: "Report an example barrier" }).click();
+  await page.getByRole("button", { name: "Report a barrier" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   expect(
     (
@@ -81,7 +81,7 @@ test("keyboard, modal focus, and WCAG checks", async ({ page }) => {
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 
-test("navigation preparation, step controls, and arrival accessibility", async ({
+test("route navigation, AR, and arrival accessibility", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -93,31 +93,29 @@ test("navigation preparation, step controls, and arrival accessibility", async (
   await page.getByRole("button", { name: "Let's find your way" }).click();
   await page.getByRole("button", { name: "Find accessible routes" }).click();
   await page.getByRole("button", { name: "Continue with route B" }).click();
-  for (const screen of ["prepare", "navigation", "arrived"]) {
+  const audit = async () => {
     const result = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
       .analyze();
-    expect
-      .soft(
-        result.violations.map((v) => ({
-          id: v.id,
-          nodes: v.nodes.map((n) => ({
-            target: n.target,
-            summary: n.failureSummary,
-          })),
+    expect(
+      result.violations.map((v) => ({
+        id: v.id,
+        nodes: v.nodes.map((n) => ({
+          target: n.target,
+          summary: n.failureSummary,
         })),
-      )
-      .toEqual([]);
-    if (screen === "prepare")
-      await page
-        .getByRole("button", { name: "Start navigation preview" })
-        .click();
-    if (screen === "navigation") {
-      await page.getByRole("button", { name: "Start AR journey" }).click();
-      await page.getByRole("button", { name: "Pause journey" }).click();
-      for (let i = 0; i < 4; i++)
-        await page.getByRole("button", { name: "Next instruction" }).click();
-      await page.getByRole("button", { name: "Complete journey" }).click();
-    }
-  }
+      })),
+    ).toEqual([]);
+  };
+  await audit();
+  await page.getByRole("button", { name: "View AR navigation" }).click();
+  await expect(page.getByRole("dialog", { name: "PathAble AR navigation" })).toBeVisible();
+  await expect(page.locator(".immersive-ar.is-active")).toBeVisible();
+  await audit();
+  await page.getByRole("button", { name: "Close AR navigation" }).click();
+  while (await page.getByRole("button", { name: "Next direction", exact: true }).count())
+    await page.getByRole("button", { name: "Next direction", exact: true }).click();
+  await page.getByRole("button", { name: "Finish route", exact: true }).click();
+  await expect(page.getByRole("heading", { name: /arrived/i })).toBeVisible();
+  await audit();
 });
