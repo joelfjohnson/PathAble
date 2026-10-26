@@ -5,9 +5,9 @@ export const arEvents: RouteEvent[] = [
     sceneId: "intersection",
     atSeconds: 2,
     kind: "guidance",
-    title: "Approach the sample crossing",
+    title: "Approach the crossing",
     detail:
-      "Look for the illustrated curb-ramp connection. Conditions are not verified.",
+      "Look for the curb-ramp connection. Check local conditions as you travel.",
   },
   {
     id: "ramp-note",
@@ -16,16 +16,16 @@ export const arEvents: RouteEvent[] = [
     kind: "guidance",
     title: "Curb ramp along selected route",
     detail:
-      "A visual example of infrastructure guidance, not an accessibility assessment.",
+      "Check the curb-ramp connection and surrounding conditions as you travel.",
   },
   {
     id: "barrier-report",
     sceneId: "barrier",
     atSeconds: 1,
     kind: "report-opportunity",
-    title: "An example barrier ahead",
+    title: "Report an obstacle",
     detail:
-      "Report a sample obstruction to try Route C, or continue this walkthrough.",
+      "Report an obstacle to try the alternative route, or continue.",
   },
   {
     id: "alternative-note",

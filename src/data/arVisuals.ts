@@ -23,7 +23,7 @@ export const arVisuals: Record<
           "https://commons.wikimedia.org/wiki/File:Downtown_Bentonville,_AR.jpg",
         license: "CC BY-SA 3.0",
         licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
-        changes: "Resized; animated framing and illustrative overlays.",
+        changes: "Resized; animated framing and route-guidance overlays.",
       },
       poster: "/ar/scenes/bentonville-square.webp",
     },
@@ -66,7 +66,7 @@ export const arVisuals: Record<
       src: "/ar/scenes/massey.jpg",
       width: 1920,
       height: 1440,
-      alt: "Historic Hotel Massey in downtown Bentonville, AR",
+      alt: "Historic Hotel Massey in Bentonville, Arkansas",
       isReference: true,
       credit: {
         author: "Brandonrush",
@@ -74,7 +74,7 @@ export const arVisuals: Record<
         license: "CC BY-SA 3.0",
         licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0",
         changes:
-          "Resized; animated framing and illustrative route overlays. Historical reference, not a recording of this route.",
+          "Resized; animated framing and route-guidance overlays. Historical reference, not a recording of this route.",
       },
     },
     points: [
@@ -123,7 +123,7 @@ export const arVisuals: Record<
           "https://commons.wikimedia.org/wiki/File:Downtown_Bentonville,_AR.jpg",
         license: "CC BY-SA 3.0",
         licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
-        changes: "Resized; animated framing and illustrative overlays.",
+        changes: "Resized; animated framing and route-guidance overlays.",
       },
     },
     points: [
@@ -174,7 +174,7 @@ export const arVisuals: Record<
         license: "CC BY 2.0",
         licenseUrl: "https://creativecommons.org/licenses/by/2.0",
         changes:
-          "Resized; animated framing and illustrative route overlays. Historical reference, not a recording of this route.",
+          "Resized; animated framing and route-guidance overlays. Historical reference, not a recording of this route.",
       },
     },
     points: [
@@ -211,7 +211,7 @@ export const arVisuals: Record<
       src: "/ar/scenes/roy.jpg",
       width: 1920,
       height: 1442,
-      alt: "Roy's Office Supply Building in downtown Bentonville, Arkansas",
+      alt: "Roy's Office Supply Building in Bentonville, Arkansas",
       isReference: true,
       credit: {
         author: "Brandonrush",
@@ -220,7 +220,7 @@ export const arVisuals: Record<
         license: "CC BY-SA 3.0",
         licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0",
         changes:
-          "Resized; animated framing and illustrative route overlays. Historical reference, not a recording of this route.",
+          "Resized; animated framing and route-guidance overlays. Historical reference, not a recording of this route.",
       },
     },
     points: [
@@ -270,7 +270,7 @@ export const arVisuals: Record<
         license: "CC BY-SA 3.0",
         licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0",
         changes:
-          "Resized; animated framing and illustrative route overlays. Historical reference, not a recording of this route.",
+          "Resized; animated framing and route-guidance overlays. Historical reference, not a recording of this route.",
       },
     },
     points: [
@@ -320,7 +320,7 @@ export const arVisuals: Record<
         license: "CC BY 2.0",
         licenseUrl: "https://creativecommons.org/licenses/by/2.0",
         changes:
-          "Resized; animated framing and illustrative route overlays. Historical reference, not a recording of this route.",
+          "Resized; animated framing and route-guidance overlays. Historical reference, not a recording of this route.",
       },
     },
     points: [
@@ -365,7 +365,7 @@ export const arVisuals: Record<
           "https://commons.wikimedia.org/wiki/File:Downtown_Bentonville,_AR.jpg",
         license: "CC BY-SA 3.0",
         licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
-        changes: "Resized; animated framing and illustrative overlays.",
+        changes: "Resized; animated framing and route-guidance overlays.",
       },
     },
     points: [

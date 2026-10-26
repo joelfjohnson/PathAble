@@ -46,7 +46,7 @@ export default function ARMiniMap({
         />
       </Suspense>
       <div className="ar-minimap-footer">
-        Scripted position <span>{route.distance} m · sample route</span>
+        Route progress <span>{route.distance} m · estimated</span>
       </div>
     </section>
   );

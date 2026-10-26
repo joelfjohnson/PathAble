@@ -158,7 +158,7 @@ export default function ARNavigationPage({
   );
   const end = index === scenes.length - 1;
   return (
-    <main className="ar-navigation" aria-label="Scripted visual navigation">
+    <main className="ar-navigation" aria-label="PathAble visual navigation">
       <div className="ar-visual-stage">
         <AnimatePresence initial={false} mode="sync">
           <motion.div
@@ -239,7 +239,7 @@ export default function ARNavigationPage({
               <RouteIcon size={18} />
               <span>{route.name}</span>
               <strong>
-                {route.distance} m <small>sample route</small>
+                {route.distance} m <small>estimated distance</small>
               </strong>
             </div>
             <button
@@ -249,8 +249,8 @@ export default function ARNavigationPage({
               Start AR journey <ArrowRight size={18} />
             </button>
             <small>
-              <ShieldCheck size={13} /> Scripted demonstration · not live
-              location-anchored AR.
+              <ShieldCheck size={13} /> Interactive navigation · GPS tracking
+              is off.
             </small>
           </motion.section>
         ) : (
@@ -282,9 +282,9 @@ export default function ARNavigationPage({
               />
             )}
             {activeEvent?.kind === "report-opportunity" && !state.obstacle && (
-              <section className="ar-event-card" aria-label="Example obstacle">
+              <section className="ar-event-card" aria-label="Obstacle reporting">
                 <span>
-                  <Flag size={17} /> SCRIPTED EXAMPLE
+                  <Flag size={17} /> OBSTACLE REPORTING
                 </span>
                 <h3>{activeEvent.title}</h3>
                 <p>{activeEvent.detail}</p>
@@ -295,7 +295,7 @@ export default function ARNavigationPage({
             )}
             {state.obstacle && (
               <div className="ar-route-updated">
-                <Check size={14} /> Route C avoids the reported example barrier.
+                <Check size={14} /> Route C avoids the reported barrier.
               </div>
             )}
             <div className="ar-bottom-panel">
@@ -325,7 +325,7 @@ export default function ARNavigationPage({
                 </span>
                 <div
                   role="progressbar"
-                  aria-label="Demonstrated journey progress"
+                  aria-label="Navigation progress"
                   aria-valuemin={0}
                   aria-valuemax={100}
                   aria-valuenow={Math.round(routeProgress * 100)}

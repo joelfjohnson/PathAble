@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  AnimatePresence,
   motion,
   useReducedMotion,
   useMotionValue,
@@ -29,14 +30,8 @@ import HeroScenery from "../components/home/HeroScenery";
 import AccessibilityStats from "../components/home/AccessibilityStats";
 import InteractiveCursor from "../components/motion/InteractiveCursor";
 import { useSurfaceMotion } from "../hooks/useSurfaceMotion";
-import { defaults, profiles, routes } from "../data/journey";
-import { routeDistance, solveRoute } from "../lib/routing";
-import type { ProfileId, Route } from "../types/journey";
+import type { ProfileId } from "../types/journey";
 
-const project = (p: [number, number]) => [
-  76 + (p[0] + 94.21125) * 190000,
-  410 - (p[1] - 36.37148) * 180000,
-];
 const heroHeadline = "Navigation Without Barriers";
 const marqueeFeatures = [
   { icon: Accessibility, label: "Wheelchair navigation" },
@@ -54,9 +49,9 @@ const pilotPhotos = [
   },
   {
     src: "/ar/bentonville/square.webp",
-    alt: "Downtown Bentonville City Square with its brick crossing and surrounding buildings.",
+    alt: "Bentonville City Square with its brick crossing and surrounding buildings.",
     title: "City Square",
-    detail: "Downtown Bentonville",
+    detail: "Bentonville, Arkansas",
   },
   {
     src: "/ar/bentonville/pilot-museum.webp",
@@ -77,167 +72,6 @@ const pilotPhotos = [
     detail: "Street and sidewalk",
   },
 ] as const;
-function RoutePreview({ route, paused }: { route: Route; paused: boolean }) {
-  const reduce = useReducedMotion();
-  const r = route;
-  const points = r.coordinates.map(project);
-  return (
-    <svg
-      className="atlas-map"
-      viewBox="0 0 640 520"
-      role="img"
-      aria-label={
-        r.id === "C"
-          ? "Alternative route avoiding the example barrier"
-          : r.id === "B"
-            ? "Step-free route around the modeled stairs"
-            : "Shorter route through the modeled stair segment"
-      }
-    >
-      <rect width="640" height="520" fill="#eeedf7" />
-      <g fill="#dfdeed" stroke="#d3d1e5" strokeWidth="1">
-        {[105, 284, 475].flatMap((x) =>
-          [36, 177, 306, 440].map((y) => (
-            <rect
-              key={`${x}-${y}`}
-              x={x}
-              y={y}
-              width={x === 475 ? 115 : 130}
-              height={y === 440 ? 70 : 70}
-              rx="3"
-            />
-          )),
-        )}
-      </g>
-      <path
-        d="M0 410H640 M0 258H640 M0 144H640 M76 0V520 M280 0V520 M530 0V520"
-        stroke="#fafaf6"
-        strokeWidth="24"
-        fill="none"
-      />
-      <rect x="552" y="161" width="80" height="77" rx="12" fill="#d0dec8" />
-      <g fill="#767d73" fontFamily="Inter,sans-serif" fontSize="10">
-        <text x="302" y="402">
-          SW 2ND ST
-        </text>
-        <text x="120" y="249">
-          WEST CENTRAL AVE
-        </text>
-        <text x="310" y="135">
-          NW 2ND ST
-        </text>
-        <text x="536" y="287" transform="rotate(-90 536 287)">
-          MAIN ST
-        </text>
-        <text x="564" y="198">
-          CITY
-        </text>
-        <text x="564" y="213">
-          SQUARE
-        </text>
-        <text x="60" y="363" transform="rotate(-90 60 363)">
-          B STREET
-        </text>
-      </g>
-      <polyline
-        points={routes[0].coordinates
-          .map(project)
-          .map((p) => p.join(","))
-          .join(" ")}
-        fill="none"
-        stroke="#8c938b"
-        strokeWidth="3"
-        strokeDasharray="5 7"
-      />
-      <motion.polyline
-        key={`glow-${r.id}`}
-        points={points.map((p) => p.join(",")).join(" ")}
-        fill="none"
-        stroke="#9d72ee"
-        strokeWidth="25"
-        opacity=".18"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={{ pathLength: reduce || paused ? 1 : 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: reduce || paused ? 0 : 1.1 }}
-      />
-      <motion.polyline
-        key={r.id}
-        points={points.map((p) => p.join(",")).join(" ")}
-        fill="none"
-        stroke="#7355d5"
-        strokeWidth="7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={{ pathLength: reduce || paused ? 1 : 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: reduce || paused ? 0 : 1.1, ease: "easeInOut" }}
-      />
-      <polyline
-        className="cinema-map-flow"
-        points={points.map((p) => p.join(",")).join(" ")}
-        fill="none"
-        stroke="#ede5ff"
-        strokeWidth="3"
-        strokeDasharray="2 38"
-        strokeLinecap="round"
-      />
-      <circle
-        cx={points[0][0]}
-        cy={points[0][1]}
-        r="10"
-        fill="white"
-        stroke="#7355d5"
-        strokeWidth="4"
-      />
-      <g transform={`translate(${points.at(-1)![0]},${points.at(-1)![1]})`}>
-        <circle
-          className="cinema-map-destination"
-          r="25"
-          fill="#9976d8"
-          opacity=".2"
-        />
-        <circle r="18" fill="#253c36" />
-        <path
-          d="M-4 8V-8L7-5V2L-4-1"
-          stroke="white"
-          strokeWidth="2"
-          fill="none"
-        />
-      </g>
-      <g transform="translate(280,329)">
-        <rect
-          x="-16"
-          y="-16"
-          width="32"
-          height="32"
-          rx="9"
-          fill="#fff8eb"
-          stroke="#e8b96f"
-        />
-        <path
-          d="M-8 6H-3V1H2V-4H8"
-          fill="none"
-          stroke="#9c6225"
-          strokeWidth="2"
-        />
-      </g>
-      <text x="302" y="333" fontSize="11" fill="#7b592c">
-        Stairs
-      </text>
-      <text x="292" y="435" fontSize="11" fill="#243d36">
-        Start here
-      </text>
-      <g transform="translate(590,52)">
-        <path d="M0-12L-6 7L0 4L6 7Z" fill="#253c36" />
-        <text y="-20" textAnchor="middle" fontSize="10" fill="#253c36">
-          N
-        </text>
-      </g>
-    </svg>
-  );
-}
 export default function Home({
   start,
   profile = "manual",
@@ -247,18 +81,17 @@ export default function Home({
   profile?: ProfileId;
   onProfile?: (profile: ProfileId) => void;
 }) {
-  const [accessible, setAccessible] = useState(true);
-  const [gentleSlopes, setGentleSlopes] = useState(true);
-  const [previewBarrier, setPreviewBarrier] = useState(false);
   const reduced = useReducedMotion();
   const [effectsPaused, setEffectsPaused] = useState(false);
   const [typedLength, setTypedLength] = useState(0);
   const [typingComplete, setTypingComplete] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const visibleHeadline =
     reduced || typingComplete
       ? heroHeadline
       : heroHeadline.slice(0, typedLength);
   const heroRef = useRef<HTMLElement>(null);
+  const phoneVideoRef = useRef<HTMLVideoElement>(null);
   const marqueeRef = useRef<HTMLElement>(null);
   const humanPhotoRef = useRef<HTMLElement>(null);
   const heroVisible = useInView(heroRef, { margin: "100px" });
@@ -310,6 +143,15 @@ export default function Home({
       if (typingTimer) window.clearInterval(typingTimer);
     };
   }, [reduced, typingComplete]);
+  useEffect(() => {
+    const video = phoneVideoRef.current;
+    if (!video) return;
+    if (heroVisible && !motionOff) {
+      void video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [heroVisible, motionOff]);
   const reveal = {
     initial: {
       opacity: motionOff ? 1 : 0,
@@ -323,25 +165,8 @@ export default function Home({
       ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
   };
-  const previewSolution = solveRoute(
-    [
-      ...(accessible ? ["stairs" as const, "ramps" as const] : []),
-      ...(gentleSlopes ? ["slopes" as const] : []),
-    ],
-    previewBarrier,
-  );
-  const previewRoute = {
-    ...(routes.find((route) => route.id === previewSolution?.routeId) ??
-      routes[1]),
-    coordinates: previewSolution?.coordinates ?? routes[1].coordinates,
-  };
-  const isStepFree = previewRoute.id !== "A";
   const changePreviewProfile = (next: ProfileId) => {
     onProfile?.(next);
-    setAccessible(
-      defaults[next].includes("stairs") || defaults[next].includes("ramps"),
-    );
-    setGentleSlopes(defaults[next].includes("slopes"));
   };
   return (
     <div
@@ -477,16 +302,12 @@ export default function Home({
               <span>
                 Designed around mobility.
                 <br />
-                <strong>Starting with downtown Bentonville.</strong>
+                <strong>Starting in Bentonville, Arkansas.</strong>
               </span>
             </div>
           </motion.div>
-          <div className="cinema-scene-note">
-            <span /> REAL PLACES. PERSONAL PATHWAYS.
-            <small>Crystal Bridges Trail · Bentonville</small>
-          </div>
           <motion.div
-            className="atlas-preview"
+            className="atlas-phone-stage"
             style={{
               y: motionOff ? 0 : previewParallax,
               rotateX: motionOff ? 0 : tiltX,
@@ -497,10 +318,10 @@ export default function Home({
               if (motionOff || event.pointerType !== "mouse") return;
               const bounds = event.currentTarget.getBoundingClientRect();
               rotateX.set(
-                (0.5 - (event.clientY - bounds.top) / bounds.height) * 9,
+                (0.5 - (event.clientY - bounds.top) / bounds.height) * 7,
               );
               rotateY.set(
-                ((event.clientX - bounds.left) / bounds.width - 0.5) * 9,
+                ((event.clientX - bounds.left) / bounds.width - 0.5) * 7,
               );
             }}
             onPointerLeave={() => {
@@ -508,113 +329,61 @@ export default function Home({
               rotateY.set(0);
             }}
             {...reveal}
-            transition={{ duration: 0.65, delay: 0.12 }}
+            transition={{ duration: 0.75, delay: 0.15 }}
           >
-            <div className="atlas-preview-header">
-              <div>
-                <span className="atlas-small">YOUR NEXT JOURNEY</span>
-                <strong>Downtown → City Square</strong>
-              </div>
-              <MapPin size={20} />
+            <span className="atlas-phone-kicker">
+              <i /> PATHABLE · BENTONVILLE ROUTES
+            </span>
+            <div className="atlas-phone-halo" aria-hidden="true" />
+            <div
+              className="atlas-phone-orbit atlas-phone-orbit-one"
+              aria-hidden="true"
+            />
+            <div
+              className="atlas-phone-orbit atlas-phone-orbit-two"
+              aria-hidden="true"
+            />
+            <div className="atlas-phone-sparks" aria-hidden="true">
+              {Array.from({ length: 8 }, (_, index) => (
+                <i key={index} />
+              ))}
             </div>
-            <div className="atlas-map-container">
-              <RoutePreview route={previewRoute} paused={motionOff} />
-              <div className="atlas-map-tag">
-                <span /> BENTONVILLE PILOT
-              </div>
+            <video
+              ref={phoneVideoRef}
+              className="atlas-phone-video"
+              src="/animations/pathable-phone.mp4"
+              poster="/animations/phone-poster.webp"
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
+            />
+            <span className="atlas-sr-only">
+              Animated 3D PathAble smartphone showing an accessible Bentonville
+              route.
+            </span>
+            <div className="atlas-phone-badge atlas-phone-badge-top">
+              <span className="atlas-phone-badge-icon">
+                <Accessibility size={17} />
+              </span>
+              <span>
+                <strong>Made around you</strong>
+                <small>Mobility first</small>
+              </span>
+              <i />
             </div>
-            <div className="atlas-preview-bottom">
-              <label className="cinema-preview-profile">
-                <Accessibility size={15} />
-                <span className="atlas-sr-only">
-                  Mobility profile for route preview
-                </span>
-                <select
-                  value={profile}
-                  onChange={(event) =>
-                    changePreviewProfile(event.target.value as ProfileId)
-                  }
-                >
-                  {profiles.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-                <SlidersHorizontal size={14} />
-              </label>
-              <div
-                className="atlas-segment"
-                role="group"
-                aria-label="Compare example routes"
-              >
-                <button
-                  aria-pressed={!isStepFree}
-                  onClick={() => {
-                    setAccessible(false);
-                    setGentleSlopes(false);
-                  }}
-                >
-                  Shortest route
-                </button>
-                <button
-                  aria-pressed={isStepFree}
-                  onClick={() => {
-                    setAccessible(true);
-                    setGentleSlopes(true);
-                  }}
-                >
-                  <Accessibility size={16} /> Step-free route
-                </button>
-              </div>
-              <div
-                className="cinema-route-preferences"
-                role="group"
-                aria-label="Try route preferences"
-              >
-                <button
-                  aria-pressed={gentleSlopes}
-                  onClick={() => setGentleSlopes((value) => !value)}
-                >
-                  <Check size={12} />
-                  Gentler slopes
-                </button>
-                <button
-                  aria-pressed={previewBarrier}
-                  onClick={() => setPreviewBarrier((value) => !value)}
-                >
-                  <Flag size={12} />
-                  Avoid example barrier
-                </button>
-              </div>
-              <div className="atlas-preview-readout" aria-live="polite">
-                <div>
-                  <strong>
-                    {previewSolution?.distance ?? routeDistance(previewRoute)}
-                    <small> m</small>
-                  </strong>
-                  <span>
-                    {previewBarrier
-                      ? "Around the reported example barrier"
-                      : isStepFree
-                        ? "Around the stairs"
-                        : "Includes modeled stairs"}
-                  </span>
-                </div>
-                <span
-                  className={
-                    isStepFree ? "atlas-status" : "atlas-status warning"
-                  }
-                >
-                  {isStepFree ? <Check size={15} /> : <Flag size={15} />}{" "}
-                  {isStepFree
-                    ? "Matches step-free needs"
-                    : "Review this barrier"}
-                </span>
-              </div>
-              <small className="atlas-caption">
-                Interactive route study · modeled accessibility conditions
-              </small>
+            <div className="atlas-phone-badge atlas-phone-badge-bottom">
+              <Navigation size={18} />
+              <span>
+                <strong>Accessibility, built in</strong>
+                <small>Routes around your needs</small>
+              </span>
+            </div>
+            <div className="atlas-phone-base-label">
+              <span>01</span>
+              <i />
+              <span>YOUR NEXT PATH, MADE PERSONAL</span>
             </div>
           </motion.div>
           <a
@@ -733,7 +502,7 @@ export default function Home({
               <div
                 className="atlas-profile-demo"
                 role="group"
-                aria-label="Preview mobility profile"
+                aria-label="Choose mobility profile"
               >
                 {(
                   [
@@ -802,7 +571,7 @@ export default function Home({
           <div className="atlas-local-row atlas-local-row-first">
             <div className="atlas-local-heading">
               <motion.span className="atlas-kicker" {...reveal}>
-                02 / OUR FIRST PILOT LAUNCH
+                02 / ACCESSIBLE ROUTES IN BENTONVILLE
               </motion.span>
               <motion.h2
                 {...reveal}
@@ -824,11 +593,9 @@ export default function Home({
                 {...reveal}
                 transition={{ ...reveal.transition, delay: reduced ? 0 : 0.24 }}
               >
-                For our initial pilot launch, PathAble focuses on Bentonville,
-                Arkansas. We&apos;ve developed an initial model of the
-                city&apos;s pedestrian network to explore how sidewalk
-                conditions, accessibility barriers, and individual mobility
-                preferences can influence navigation.
+                PathAble brings accessibility-first route planning to
+                Bentonville, Arkansas. Route choices account for sidewalk
+                access, reported barriers, and individual mobility preferences.
               </motion.p>
             </div>
             <div
@@ -898,7 +665,7 @@ export default function Home({
               <div className="atlas-local-detail">
                 <MapPin />
                 <div>
-                  <strong>Bentonville, Arkansas → Our First Pilot City</strong>
+                  <strong>Bentonville, Arkansas → Where PathAble Begins</strong>
                   <span>
                     Personalized accessible routes. Smarter navigation. Greater
                     independence.
@@ -923,32 +690,68 @@ export default function Home({
             <h2>A clearer picture.</h2>
             <p>What works today, and what comes next.</p>
           </motion.div>
-          <div>
+          <div className="atlas-faq-list">
             {[
               [
                 "Where can I use PathAble?",
-                "This pilot supports a small downtown Bentonville network between the featured pickup point and City Square. It is not citywide navigation.",
+                "PathAble brings accessible route planning to Bentonville, with route options shaped around your mobility preferences.",
               ],
               [
                 "How are routes personalized?",
-                "A local graph search excludes modeled stairs or missing ramps when required, and adds penalties for slopes and uneven surfaces. Your choices affect the recommended route.",
+                "PathAble considers stairs, curb ramps, slopes, and uneven surfaces when recommending routes. Your mobility preferences shape which option fits best.",
               ],
               [
                 "Is Street View the same as augmented reality?",
-                "No. Street View opens Google’s panoramic imagery in another tab. Live camera-aligned AR is a future feature, and the route preview does not track your GPS position.",
+                "No. Street View opens Google’s panoramic imagery in another tab. This navigation view does not track your GPS position or align guidance to the live camera.",
               ],
               [
                 "What happens when I report a barrier?",
                 "The report stays in your browser session. The affected segment is excluded and the route is recalculated from the starting point. Nothing is sent to a city agency.",
               ],
-            ].map(([q, a]) => (
-              <details key={q}>
-                <summary>
+            ].map(([q, a], index) => (
+              <motion.article
+                className={
+                  "atlas-faq-item " + (openFaq === index ? "is-open" : "")
+                }
+                key={q}
+                layout={!reduced}
+                transition={{
+                  duration: reduced ? 0 : 0.32,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                <button
+                  className="atlas-faq-question"
+                  id={`faq-question-${index}`}
+                  aria-expanded={openFaq === index}
+                  aria-controls={`faq-answer-${index}`}
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                >
                   {q}
-                  <Plus size={18} />
-                </summary>
-                <p>{a}</p>
-              </details>
+                  <Plus size={18} aria-hidden="true" />
+                </button>
+                <AnimatePresence initial={false}>
+                  {openFaq === index && (
+                    <motion.div
+                      id={`faq-answer-${index}`}
+                      className="atlas-faq-answer"
+                      role="region"
+                      aria-labelledby={`faq-question-${index}`}
+                      initial={
+                        reduced ? false : { height: 0, opacity: 0, y: -5 }
+                      }
+                      animate={{ height: "auto", opacity: 1, y: 0 }}
+                      exit={{ height: 0, opacity: 0, y: -4 }}
+                      transition={{
+                        duration: reduced ? 0 : 0.28,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                    >
+                      <p>{a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.article>
             ))}
           </div>
         </section>
@@ -975,9 +778,9 @@ export default function Home({
             })
           }
         />
-        <span>Mobility-first navigation · Bentonville pilot</span>
+        <span>Mobility-first navigation · Bentonville, Arkansas</span>
         <a href="#questions">
-          About this pilot <ArrowUpRight size={15} />
+          Explore PathAble <ArrowUpRight size={15} />
         </a>
       </footer>
     </div>

@@ -63,10 +63,10 @@ export default function RouteNavigation({
         <div>
           <strong>Bentonville City Square</strong>
           <span>
-            Route {route.id} · {routeDistance(route)} m · route preview
+            Route {route.id} · {routeDistance(route)} m
           </span>
         </div>
-        <span className="pilot-chip">Bentonville pilot</span>
+        <span className="pilot-chip">Bentonville routes</span>
       </header>
       <div className="navigation-layout">
         <aside className="directions-panel">
@@ -152,10 +152,6 @@ export default function RouteNavigation({
             <Flag size={17} />
             {state.obstacle ? "Barrier reported" : "Report a barrier"}
           </button>
-          <p className="navigation-note">
-            Step through the planned route. Position is not live GPS;
-            accessibility conditions are modeled and require field verification.
-          </p>
         </aside>
         <div className="navigation-map-panel">
           <MapView
@@ -184,8 +180,7 @@ export default function RouteNavigation({
               Open Google Street View <ExternalLink size={17} />
             </a>
             <small>
-              Opens Google Maps in a new tab. Imagery availability varies. This
-              is Street View, not live AR.
+              Opens Google Maps in a new tab. Imagery availability varies.
             </small>
             <button
               className="nav-button ar-preview-action"

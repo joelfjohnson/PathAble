@@ -90,15 +90,13 @@ export default function ARSettingsDialog({
         <div>
           <h3>About this view</h3>
           <p>
-            Scripted visual navigation. No GPS, camera access, or live AR
-            tracking. Accessibility conditions and approximate distances are
-            illustrative.
+            GPS, camera access, and live AR tracking are off. Accessibility
+            details and distances are estimates.
           </p>
           {!scene.media.isReference && (
             <p>
-              Original, location-neutral illustrations represent different
-              stages of the demonstration. These views are not photographs of
-              Bentonville.
+              Original PathAble scenes show route stages; they are not
+              photographs of Bentonville.
             </p>
           )}
           {scene.media.credit && (
@@ -120,7 +118,7 @@ export default function ARSettingsDialog({
               <small>
                 {scene.media.credit.changes} These historical views show
                 landmarks around the square, not a continuous first-person
-                recording of Route B or C. Camera movement is simulated.
+                recording of this route. Camera movement is an on-screen effect.
               </small>
             </>
           )}

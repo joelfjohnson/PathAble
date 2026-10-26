@@ -184,7 +184,7 @@ export default function ImmersiveARPreview({
             <button className="ar-glass-button" aria-label="Close AR navigation" onClick={onClose}><ArrowLeft size={19} /></button>
             <div className="immersive-ar-destination"><span>NOW NAVIGATING</span><strong>Route {route.id} · {route.name} · Bentonville City Square</strong></div>
             <div className="immersive-ar-top-actions">
-              <span className="ar-interactive-chip"><i /> Interactive preview</span>
+              <span className="ar-interactive-chip"><i /> GPS off</span>
               <button className="ar-glass-button" aria-label="Toggle fullscreen" onClick={toggleFullscreen}><Maximize2 size={18} /></button>
             </div>
           </header>
@@ -200,7 +200,7 @@ export default function ImmersiveARPreview({
           <div className="immersive-ar-bottom">
             <div className="immersive-ar-progress-row" aria-label={`Journey progress ${Math.round(progress * 100)} percent`}><span>ROUTE</span><i><b style={{ width: `${progress * 100}%` }} /></i><strong>{Math.round(progress * 100)}%</strong></div>
             <div className="immersive-ar-controls"><button className="ar-control-main" aria-label={playing ? "Pause navigation" : "Start navigation"} onClick={togglePlay}>{playing ? <Pause size={20} /> : <Play size={20} />}</button><button aria-label={voice ? "Disable voice guidance" : "Enable voice guidance"} aria-pressed={voice} onClick={toggleVoice}><Volume2 size={18} /></button><button aria-label="Report an obstacle" onClick={onReport}><Flag size={18} /><em>Report</em></button></div>
-            <div className="immersive-ar-footnote"><span><i /> PathAble AR navigation</span><button onClick={onArrive}>Destination reached</button><small>Illustrative route preview · GPS tracking is off</small></div>
+            <div className="immersive-ar-footnote"><span><i /> PathAble AR navigation</span><button onClick={onArrive}>Destination reached</button><small>GPS tracking is off</small></div>
           </div>
         </>
       )}

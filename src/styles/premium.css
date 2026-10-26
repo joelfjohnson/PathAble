@@ -363,17 +363,24 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 72% 46%, transparent 0 16%, rgba(139,92,246,.08) 34%, transparent 58%);
+  background: radial-gradient(
+    circle at 72% 46%,
+    transparent 0 16%,
+    rgba(139, 92, 246, 0.08) 34%,
+    transparent 58%
+  );
   animation: environmentBreath 8s ease-in-out infinite;
   pointer-events: none;
 }
 .env-grid {
   position: absolute;
   inset: -15%;
-  opacity: .34;
+  opacity: 0.34;
   transform: perspective(720px) rotateX(64deg) translateY(18%);
   transform-origin: center bottom;
-  background-image: linear-gradient(rgba(139,92,246,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,.11) 1px, transparent 1px);
+  background-image:
+    linear-gradient(rgba(139, 92, 246, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.11) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: linear-gradient(to top, #000, transparent 75%);
   animation: gridDrift 18s linear infinite;
@@ -384,21 +391,35 @@
   top: 21%;
   width: min(38vw, 560px);
   aspect-ratio: 1;
-  border: 1px solid rgba(139,92,246,.18);
+  border: 1px solid rgba(139, 92, 246, 0.18);
   border-radius: 50%;
-  box-shadow: inset 0 0 60px rgba(139,92,246,.08), 0 0 45px rgba(139,92,246,.08);
+  box-shadow:
+    inset 0 0 60px rgba(139, 92, 246, 0.08),
+    0 0 45px rgba(139, 92, 246, 0.08);
   transform: rotateX(62deg) rotateZ(-22deg);
   animation: orbitSpin 26s linear infinite;
 }
-.orbit-b { width: min(24vw, 360px); right: 23%; top: 32%; animation-duration: 19s; animation-direction: reverse; opacity: .65; }
+.orbit-b {
+  width: min(24vw, 360px);
+  right: 23%;
+  top: 32%;
+  animation-duration: 19s;
+  animation-direction: reverse;
+  opacity: 0.65;
+}
 .env-sweep {
   position: absolute;
   width: 42vw;
   height: 2px;
   right: -8vw;
   top: 30%;
-  background: linear-gradient(90deg, transparent, rgba(167,139,250,.7), transparent);
-  filter: blur(.2px);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(167, 139, 250, 0.7),
+    transparent
+  );
+  filter: blur(0.2px);
   transform: rotate(-24deg);
   animation: sweepAcross 7s ease-in-out infinite;
 }
@@ -431,7 +452,16 @@
   background: #f0ecff;
   animation-delay: -9s;
 }
-.light-c { right: 44%; top: 14%; width: 130px; height: 130px; background: #c4a6ff; opacity: .16; animation-duration: 11s; animation-delay: -4s; }
+.light-c {
+  right: 44%;
+  top: 14%;
+  width: 130px;
+  height: 130px;
+  background: #c4a6ff;
+  opacity: 0.16;
+  animation-duration: 11s;
+  animation-delay: -4s;
+}
 .environment-pin {
   transform-box: fill-box;
   transform-origin: center;
@@ -488,12 +518,138 @@
   transform: rotate(35deg);
   animation-delay: -7s;
 }
-.shape-cross { width: 32px; height: 32px; right: 31%; top: 27%; opacity: .6; animation-delay: -3s; }
-.shape-cross:before, .shape-cross:after { content: ""; position: absolute; inset: 14px 0; height: 2px; background: #a276dd; box-shadow: 0 0 14px #a276dd; }
-.shape-cross:after { transform: rotate(90deg); }
-.shape-orb { width: 12px; height: 12px; border-radius: 50%; right: 17%; top: 31%; background: #fff; box-shadow: 0 0 0 8px #a276dd22, 0 0 28px #8b5cf6aa; animation-duration: 9s; }
-.micro-particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #9b72df; box-shadow: 0 0 12px #8b5cf6aa; opacity: .55; animation: microFloat 8s ease-in-out infinite; }
-.micro-1{left:62%;top:18%;animation-delay:-1s}.micro-2{left:76%;top:24%;animation-delay:-4s}.micro-3{left:83%;top:37%;animation-delay:-2s}.micro-4{left:68%;top:42%;animation-delay:-6s}.micro-5{left:91%;top:52%;animation-delay:-3s}.micro-6{left:57%;top:65%;animation-delay:-5s}.micro-7{left:73%;top:72%;animation-delay:-7s}.micro-8{left:42%;top:24%;animation-delay:-2s}.micro-9{left:50%;top:15%;animation-delay:-4s}.micro-10{left:87%;top:18%;animation-delay:-1s}.micro-11{left:64%;top:82%;animation-delay:-3s}.micro-12{left:79%;top:61%;animation-delay:-6s}.micro-13{left:36%;top:45%;animation-delay:-5s}.micro-14{left:95%;top:67%;animation-delay:-2s}.micro-15{left:54%;top:52%;animation-delay:-7s}.micro-16{left:70%;top:10%;animation-delay:-4s}.micro-17{left:89%;top:43%;animation-delay:-1s}.micro-18{left:47%;top:78%;animation-delay:-6s}
+.shape-cross {
+  width: 32px;
+  height: 32px;
+  right: 31%;
+  top: 27%;
+  opacity: 0.6;
+  animation-delay: -3s;
+}
+.shape-cross:before,
+.shape-cross:after {
+  content: "";
+  position: absolute;
+  inset: 14px 0;
+  height: 2px;
+  background: #a276dd;
+  box-shadow: 0 0 14px #a276dd;
+}
+.shape-cross:after {
+  transform: rotate(90deg);
+}
+.shape-orb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  right: 17%;
+  top: 31%;
+  background: #fff;
+  box-shadow:
+    0 0 0 8px #a276dd22,
+    0 0 28px #8b5cf6aa;
+  animation-duration: 9s;
+}
+.micro-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #9b72df;
+  box-shadow: 0 0 12px #8b5cf6aa;
+  opacity: 0.55;
+  animation: microFloat 8s ease-in-out infinite;
+}
+.micro-1 {
+  left: 62%;
+  top: 18%;
+  animation-delay: -1s;
+}
+.micro-2 {
+  left: 76%;
+  top: 24%;
+  animation-delay: -4s;
+}
+.micro-3 {
+  left: 83%;
+  top: 37%;
+  animation-delay: -2s;
+}
+.micro-4 {
+  left: 68%;
+  top: 42%;
+  animation-delay: -6s;
+}
+.micro-5 {
+  left: 91%;
+  top: 52%;
+  animation-delay: -3s;
+}
+.micro-6 {
+  left: 57%;
+  top: 65%;
+  animation-delay: -5s;
+}
+.micro-7 {
+  left: 73%;
+  top: 72%;
+  animation-delay: -7s;
+}
+.micro-8 {
+  left: 42%;
+  top: 24%;
+  animation-delay: -2s;
+}
+.micro-9 {
+  left: 50%;
+  top: 15%;
+  animation-delay: -4s;
+}
+.micro-10 {
+  left: 87%;
+  top: 18%;
+  animation-delay: -1s;
+}
+.micro-11 {
+  left: 64%;
+  top: 82%;
+  animation-delay: -3s;
+}
+.micro-12 {
+  left: 79%;
+  top: 61%;
+  animation-delay: -6s;
+}
+.micro-13 {
+  left: 36%;
+  top: 45%;
+  animation-delay: -5s;
+}
+.micro-14 {
+  left: 95%;
+  top: 67%;
+  animation-delay: -2s;
+}
+.micro-15 {
+  left: 54%;
+  top: 52%;
+  animation-delay: -7s;
+}
+.micro-16 {
+  left: 70%;
+  top: 10%;
+  animation-delay: -4s;
+}
+.micro-17 {
+  left: 89%;
+  top: 43%;
+  animation-delay: -1s;
+}
+.micro-18 {
+  left: 47%;
+  top: 78%;
+  animation-delay: -6s;
+}
 .navigation-environment[data-paused="true"] * {
   animation-play-state: paused !important;
 }
@@ -1309,23 +1465,46 @@
   margin: 25px 0 13px;
 }
 .premium-application .location-fields {
-  padding: 1px 15px;
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.premium-application .location-fields:focus-within {
+  border-color: transparent;
+  box-shadow: none;
+}
+.premium-application .location-fields label {
+  min-height: 72px;
+}
+.premium-application .location-fields .location-entry {
+  min-height: 72px;
+  gap: 12px;
+  padding: 8px 14px;
+  border: 1px solid #e3d8ee;
   border-radius: 12px;
-  border-color: #e3d8ee;
   background: #fff;
   box-shadow: 0 5px 18px #4d276006;
   transition:
     box-shadow 0.25s,
-    border-color 0.25s;
+    border-color 0.25s,
+    transform 0.25s;
 }
-.premium-application .location-fields:focus-within {
+.premium-application .location-fields .location-entry:focus-within {
   border-color: #b08bdf;
   box-shadow:
     0 0 0 4px #8b5cf609,
     0 8px 23px #4d27600a;
 }
-.premium-application .location-fields label {
-  min-height: 78px;
+.premium-application .location-entry input {
+  min-width: 0;
+}
+.search-inline-error {
+  color: #a43f55 !important;
+  font-size: 10px !important;
+  margin: 9px 2px 0 !important;
 }
 .premium-application .location-fields input {
   font-size: 12px;
@@ -1767,23 +1946,55 @@
   }
 }
 @keyframes environmentBreath {
-  0%, 100% { opacity: .55; transform: scale(.96); }
-  50% { opacity: 1; transform: scale(1.08); }
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
 }
 @keyframes gridDrift {
-  to { background-position: 0 64px, 64px 0; }
+  to {
+    background-position:
+      0 64px,
+      64px 0;
+  }
 }
 @keyframes orbitSpin {
-  to { rotate: 360deg; }
+  to {
+    rotate: 360deg;
+  }
 }
 @keyframes sweepAcross {
-  0%, 100% { opacity: 0; translate: -12vw 10vh; }
-  35%, 65% { opacity: .8; }
-  80% { opacity: 0; translate: 10vw -8vh; }
+  0%,
+  100% {
+    opacity: 0;
+    translate: -12vw 10vh;
+  }
+  35%,
+  65% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0;
+    translate: 10vw -8vh;
+  }
 }
 @keyframes microFloat {
-  0%, 100% { translate: 0 0; scale: .7; opacity: .25; }
-  50% { translate: 12px -20px; scale: 1.35; opacity: .9; }
+  0%,
+  100% {
+    translate: 0 0;
+    scale: 0.7;
+    opacity: 0.25;
+  }
+  50% {
+    translate: 12px -20px;
+    scale: 1.35;
+    opacity: 0.9;
+  }
 }
 @keyframes portalSweep {
   from {

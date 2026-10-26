@@ -45,7 +45,7 @@ export default function MapView({
         container: container.current,
         style: "https://tiles.openfreemap.org/styles/positron",
         center: [-94.2099, 36.3719],
-        zoom: 16.4,
+        zoom: 12.2,
         attributionControl: { compact: true },
       });
       map.current = m;
@@ -63,18 +63,6 @@ export default function MapView({
       m.on("load", () => {
         setFailed(false);
         setReady(true);
-      });
-      [
-        [start, "start-marker", "●", "Simulated transit pickup"],
-        [destination, "end-marker", "⚑", "Bentonville City Square"],
-      ].forEach(([coord, cls, label, title]) => {
-        const el = document.createElement("div");
-        el.className = cls as string;
-        el.textContent = label as string;
-        el.title = title as string;
-        new maplibregl.Marker({ element: el })
-          .setLngLat(coord as [number, number])
-          .addTo(m);
       });
       const ro = new ResizeObserver(([entry]) => {
         m.resize();
@@ -134,6 +122,16 @@ export default function MapView({
       );
       m.setPaintProperty(id, "line-width", r.id === selected ? 7 : 4);
       m.setPaintProperty(id, "line-opacity", r.id === selected ? 1 : 0.75);
+    }
+    if (!showRoutes) {
+      m.easeTo({
+        center: [-94.2099, 36.3719],
+        zoom: 12.2,
+        duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? 0
+          : 1100,
+      });
+      return;
     }
     let animationFrame = 0;
     if (
@@ -204,9 +202,7 @@ export default function MapView({
     const el = document.createElement("div");
     el.className = "hazard-marker" + (reported ? " is-reported" : "");
     el.textContent = reported ? "!" : "◇";
-    el.title = reported
-      ? "Reported example barrier"
-      : "Example curb-ramp location";
+    el.title = reported ? "Reported barrier" : "Potential curb-ramp location";
     const marker = new maplibregl.Marker({ element: el })
       .setLngLat(hazard)
       .addTo(m);
@@ -224,6 +220,23 @@ export default function MapView({
     viewSize,
     onInspect,
   ]);
+  useEffect(() => {
+    const m = map.current;
+    if (!m || !ready) return;
+    if (!showRoutes) return;
+    const markers = [
+      [start, "start-marker", "BUS", "Bentonville bus stop"],
+      [destination, "end-marker", "⚑", "Bentonville City Square"],
+    ] as const;
+    const instances = markers.map(([coord, cls, label, title]) => {
+      const el = document.createElement("div");
+      el.className = cls;
+      el.textContent = label;
+      el.title = title;
+      return new maplibregl.Marker({ element: el }).setLngLat(coord).addTo(m);
+    });
+    return () => instances.forEach((marker) => marker.remove());
+  }, [ready, showRoutes]);
   useEffect(() => {
     const m = map.current;
     if (!m || !ready) return;
@@ -279,7 +292,7 @@ export default function MapView({
       <div
         ref={container}
         className="map-canvas"
-        aria-label="Interactive map of the featured Bentonville journey"
+        aria-label="Interactive map of Bentonville routes"
       />
       {!ready && !failed && (
         <div className="map-tile-loading" role="status">
@@ -300,9 +313,11 @@ export default function MapView({
         <span className="live-dot" /> BENTONVILLE, AR{" "}
         <span>36.3729° N · 94.2088° W</span>
       </div>
-      <div className="map-legend">
-        <i /> Selected route <i className="neutral" /> Other route
-      </div>
+      {showRoutes && (
+        <div className="map-legend">
+          <i /> Selected route <i className="neutral" /> Other route
+        </div>
+      )}
     </div>
   );
 }

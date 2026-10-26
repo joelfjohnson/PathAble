@@ -28,7 +28,7 @@ export const photoMedia: ARScene["media"] = {
     license: "CC BY-SA 3.0",
     licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
     changes:
-      "Resized, compressed, and presented with illustrative overlays and gentle shared motion.",
+      "Resized, compressed, and presented with route-guidance overlays and gentle shared motion.",
   },
 };
 const forward: Point[] = [
@@ -135,7 +135,7 @@ export function getARScenes(routeId: ARRouteId, resumeProgress = 0): ARScene[] {
                 point: { x: 0.49, y: 0.69 },
                 region: rampRegion,
                 label: "Curb ramp along selected route",
-                detail: "Illustrative highlight · not verified",
+                detail: "Curb-ramp details vary by location",
                 from: 1,
                 preference: "ramps",
               },
@@ -146,8 +146,8 @@ export function getARScenes(routeId: ARRouteId, resumeProgress = 0): ARScene[] {
                   id: "sample-obstacle",
                   type: "construction",
                   point: { x: 0.39, y: 0.77 },
-                  label: "Example obstruction ahead",
-                  detail: "Scripted reporting opportunity",
+                  label: "Potential obstruction ahead",
+                  detail: "Report an obstacle to update your route",
                   from: 1,
                 },
               ]
@@ -158,7 +158,7 @@ export function getARScenes(routeId: ARRouteId, resumeProgress = 0): ARScene[] {
                     type: "entrance",
                     point: { x: 0.31, y: 0.6 },
                     label: "Bentonville City Square",
-                    detail: "Destination in this walkthrough",
+                    detail: "Destination",
                     from: 0,
                   },
                 ]
@@ -169,7 +169,7 @@ export function getARScenes(routeId: ARRouteId, resumeProgress = 0): ARScene[] {
                       type: "surface",
                       point: { x: 0.53, y: 0.75 },
                       label: "Your pathway preferences",
-                      detail: "Smoother surfaces prioritized · sample guidance",
+                      detail: "Smoother surfaces prioritized",
                       from: 3,
                       until: 7,
                       preference: "smooth",
@@ -181,8 +181,8 @@ export function getARScenes(routeId: ARRouteId, resumeProgress = 0): ARScene[] {
                         id: "rest-stop",
                         type: "rest",
                         point: { x: 0.72, y: 0.92 },
-                        label: "Rest-stop example",
-                        detail: "Illustrative stop · availability not verified",
+                        label: "Rest stop",
+                        detail: "Availability varies by location",
                         from: 2,
                         until: 6,
                         preference: "seating",

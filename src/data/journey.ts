@@ -84,11 +84,11 @@ export const routes: Route[] = [
     name: "Shortest route",
     distance: 320,
     minutes: 5,
-    description: "A shorter journey with an illustrative steep-slope concern.",
+    description: "A shorter route with a steep incline to consider.",
     features: [
       "Shorter distance",
-      "Example steep incline",
-      "2 sample crossings",
+      "Steep incline",
+      "2 crossings",
     ],
     coordinates: [
       start,
@@ -98,7 +98,7 @@ export const routes: Route[] = [
       destination,
     ],
     steps: [
-      "Head north along the sample pathway.",
+      "Head north along the highlighted path.",
       "Turn right toward the square.",
       "Continue to Bentonville City Square.",
     ],
@@ -108,11 +108,11 @@ export const routes: Route[] = [
     name: "Accessibility-focused",
     distance: 410,
     minutes: 7,
-    description: "A little farther. Designed around a gentler sample pathway.",
+    description: "A little farther, with gentler inclines prioritized.",
     features: [
-      "Gentler sample slopes",
-      "Step-free example path",
-      "Example curb ramps",
+      "Gentler inclines prioritized",
+      "Step-free path prioritized",
+      "Curb ramps prioritized",
     ],
     coordinates: [
       start,
@@ -125,7 +125,7 @@ export const routes: Route[] = [
     steps: [
       "Head west toward SW B Street.",
       "Turn right and continue north.",
-      "Turn right toward the square, using the example curb ramp.",
+      "Turn right toward the square, following curb-ramp guidance.",
       "Continue to Bentonville City Square.",
     ],
   },
@@ -135,11 +135,11 @@ export const routes: Route[] = [
     distance: 490,
     minutes: 9,
     description:
-      "A predefined alternative that avoids the reported example barrier.",
+      "An alternate route that avoids the reported barrier.",
     features: [
       "Avoids reported barrier",
-      "Step-free example path",
-      "Longer sample journey",
+      "Step-free path",
+      "Longer route",
     ],
     coordinates: [
       start,
@@ -151,7 +151,7 @@ export const routes: Route[] = [
     ],
     steps: [
       "Head west toward SW B Street.",
-      "Continue north past the example barrier.",
+      "Continue north along the alternate route.",
       "Turn right along the alternative pathway.",
       "Enter Bentonville City Square from the north.",
     ],

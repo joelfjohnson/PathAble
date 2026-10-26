@@ -81,10 +81,10 @@ export function recordingMedia(id: string): ARScene["media"] {
     poster: `/ar/videos/ar-recording-${id}.jpg`,
     width: 1280,
     height: 674,
-    alt: "User-supplied Bentonville Street View screen recording. Scripted navigation preview; not live or wheelchair-height footage.",
+    alt: "Recorded Bentonville street imagery with PathAble route guidance. Not live or wheelchair-height footage.",
     isReference: true,
     preserveFullFrame: true,
-    sourceLabel: "Google Street View recording · simulated guidance",
+    sourceLabel: "Recorded Google Street View · PathAble route guidance",
   };
 }
 

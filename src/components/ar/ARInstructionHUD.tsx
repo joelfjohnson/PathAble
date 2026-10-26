@@ -38,7 +38,7 @@ export default function ARInstructionHUD({
         </div>
         <h2 tabIndex={-1}>{scene.instruction}</h2>
         <p aria-live="off">
-          {distanceLabel} <span>· illustrative</span>
+          {distanceLabel} <span>· estimated</span>
         </p>
       </div>
     </div>

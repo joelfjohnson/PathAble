@@ -32,7 +32,7 @@ export function ProblemStory() {
       <div
         className="barrier-diagram"
         role="img"
-        aria-label="Illustrative shorter route encounters a barrier; an accessibility-focused route goes around"
+        aria-label="A shorter route encounters a barrier; an accessibility-focused route goes around"
       >
         <svg viewBox="0 0 1200 230">
           <path className="problem-direct" d="M40 150H1160" />
@@ -52,7 +52,7 @@ export function ProblemStory() {
         </svg>
         <div className="barrier-token">
           <Flag size={19} />
-          <span>EXAMPLE BARRIER</span>
+          <span>REPORTED BARRIER</span>
           <strong>
             A different route.
             <br />
@@ -184,14 +184,14 @@ export function VisualStory({ start }: { start: () => void }) {
           <button className="button" data-magnetic onClick={start}>
             Try visual navigation <ArrowUpRight size={18} />
           </button>
-          <small>Scripted visual walkthrough · No live location tracking</small>
+          <small>Interactive navigation · Location tracking off</small>
         </div>
         <div className="visual-story-stage reveal" data-preview-step={active}>
           <div className="visual-preview-halo" />
           <div className="visual-preview-frame">
             <img
               src={`/ar/scenes/${active === 0 ? "transit" : active === 1 ? "crossing" : "avenue"}.svg`}
-              alt="Original illustrative navigation viewpoint"
+              alt="PathAble artwork depicting a sidewalk viewpoint"
             />
             <svg
               className="visual-preview-path"
@@ -237,9 +237,9 @@ export function VisualStory({ start }: { start: () => void }) {
             <div className="visual-preview-label">
               <Accessibility size={17} />{" "}
               {active === 1
-                ? "Sample curb-ramp connection"
+                ? "Curb-ramp connection"
                 : "Preferences at every turn"}
-              <span>ILLUSTRATIVE VIEW</span>
+              <span>PATHABLE NAVIGATION</span>
             </div>
             <div className="visual-preview-footer">
               <span>
@@ -281,15 +281,15 @@ export function CommunityDemo() {
         <Flag size={20} />
       </span>
       <div className="community-demo-card">
-        <span className="pill">ILLUSTRATIVE ROUTE UPDATE</span>
+        <span className="pill">ROUTE UPDATED</span>
         <strong>{rerouted ? "A new way forward." : "Plans can change."}</strong>
         <p>
           {rerouted
-            ? "The alternative avoids the sample barrier."
+            ? "The alternative avoids the reported barrier."
             : "A reported barrier changes the journey."}
         </p>
         <button className="text-link" onClick={() => setRerouted(!rerouted)}>
-          {rerouted ? "Replay original route" : "Preview alternative route"}
+          {rerouted ? "Show original route" : "Compare alternate route"}
           <ArrowUpRight size={16} />
         </button>
       </div>

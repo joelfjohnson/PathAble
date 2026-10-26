@@ -49,7 +49,7 @@ export default function ReportDialog({
         </span>
         <h2 id="report-title">Help clear the way.</h2>
         <p>
-          Add an example barrier to this journey. Your report stays in this
+          Report a barrier to update this route. Your report stays in this
           session.
         </p>
         <label>
@@ -111,7 +111,7 @@ export default function ReportDialog({
           />
         )}
         <div className="info">
-          <MapPin size={17} /> Example barrier · near the featured square route
+          <MapPin size={17} /> Bentonville pickup to City Square
         </div>
         <button className="button full">
           Add report & find alternative <span>↗</span>

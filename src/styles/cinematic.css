@@ -914,3 +914,251 @@
     animation: none;
   }
 }
+
+/* Blender phone render replaces the static route dashboard in the hero. */
+.atlas-home .atlas-phone-stage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: min(72vh, 690px);
+  min-height: 590px;
+  align-self: center;
+  justify-self: stretch;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  cursor: default;
+}
+.atlas-phone-halo {
+  position: absolute;
+  z-index: -2;
+  width: min(92%, 580px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 48%, #dfc9f5b8 0, #e7d9f18c 31%, transparent 70%),
+    radial-gradient(circle at 58% 56%, #b696d342, transparent 68%);
+  filter: blur(7px);
+  animation: atlas-phone-halo 7s ease-in-out infinite alternate;
+}
+.atlas-phone-orbit {
+  position: absolute;
+  z-index: -1;
+  width: 82%;
+  max-width: 520px;
+  aspect-ratio: 1.18;
+  border: 1px solid #8c62aa35;
+  border-radius: 50%;
+  transform: rotate(-24deg) rotateX(64deg);
+  pointer-events: none;
+}
+.atlas-phone-orbit-one {
+  animation: atlas-phone-orbit 24s linear infinite;
+}
+.atlas-phone-orbit-two {
+  width: 96%;
+  border-color: #b192c02c;
+  border-style: dashed;
+  transform: rotate(32deg) rotateX(62deg);
+  animation: atlas-phone-orbit 34s linear infinite reverse;
+}
+.atlas-phone-kicker {
+  position: absolute;
+  z-index: 3;
+  top: 5%;
+  left: 5%;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  color: #634878;
+  border: 1px solid #fff9;
+  border-radius: 999px;
+  background: #fffaf1bb;
+  box-shadow: 0 10px 35px #42265012;
+  backdrop-filter: blur(14px);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+}
+.atlas-phone-kicker i,
+.atlas-phone-badge-top > i {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #8e65a9;
+  box-shadow: 0 0 0 5px #a883bf20, 0 0 16px #946cae9c;
+}
+.atlas-home .atlas-phone-video {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(100%, 590px);
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 33px 34px #3a204d2a);
+  mask-image: radial-gradient(ellipse 51% 52% at 50% 50%, #000 64%, transparent 100%);
+  animation: atlas-phone-float 6.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.atlas-phone-badge {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 15px;
+  border: 1px solid #ffffffd9;
+  border-radius: 16px;
+  color: #43354a;
+  background: #fffdf5d9;
+  box-shadow: 0 14px 38px #36204420, inset 0 1px #fff;
+  backdrop-filter: blur(16px);
+  transform: translateZ(36px);
+  animation: atlas-phone-badge-float 5s ease-in-out infinite;
+}
+.atlas-phone-badge-top {
+  top: 23%;
+  right: 1%;
+  animation-delay: -1.8s;
+}
+.atlas-phone-badge-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: #704f8a;
+  border-radius: 11px;
+  background: #f0e8f5;
+}
+.atlas-phone-badge > span:nth-child(2),
+.atlas-phone-badge-bottom > span {
+  display: grid;
+  gap: 3px;
+}
+.atlas-phone-badge strong {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.atlas-phone-badge small {
+  color: #82768a;
+  font-size: 9px;
+}
+.atlas-phone-badge-bottom {
+  bottom: 13%;
+  left: 0;
+  color: #74548c;
+  animation-delay: -3.2s;
+}
+.atlas-phone-base-label {
+  position: absolute;
+  z-index: 3;
+  bottom: 3%;
+  right: 5%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #6c5a73;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+}
+.atlas-phone-base-label > span:first-child {
+  color: #987eaa;
+  font-variant-numeric: tabular-nums;
+}
+.atlas-phone-base-label i {
+  width: 37px;
+  height: 1px;
+  background: linear-gradient(90deg, #9774ae, transparent);
+}
+.atlas-phone-sparks {
+  position: absolute;
+  z-index: 2;
+  inset: 12% 8%;
+  pointer-events: none;
+}
+.atlas-phone-sparks i {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #a181b5;
+  box-shadow: 0 0 12px 3px #b694ca66;
+  animation: atlas-phone-spark 3.8s ease-in-out infinite alternate;
+}
+.atlas-phone-sparks i:nth-child(1) { left: 13%; top: 27%; }
+.atlas-phone-sparks i:nth-child(2) { left: 86%; top: 35%; animation-delay: -1.2s; }
+.atlas-phone-sparks i:nth-child(3) { left: 18%; top: 68%; animation-delay: -2s; }
+.atlas-phone-sparks i:nth-child(4) { left: 80%; top: 72%; animation-delay: -0.7s; }
+.atlas-phone-sparks i:nth-child(5) { left: 27%; top: 14%; width: 3px; height: 3px; animation-delay: -2.5s; }
+.atlas-phone-sparks i:nth-child(6) { left: 75%; top: 18%; width: 3px; height: 3px; animation-delay: -1.6s; }
+.atlas-phone-sparks i:nth-child(7) { left: 8%; top: 48%; width: 3px; height: 3px; animation-delay: -0.4s; }
+.atlas-phone-sparks i:nth-child(8) { left: 92%; top: 56%; width: 3px; height: 3px; animation-delay: -2.8s; }
+@keyframes atlas-phone-float {
+  0%, 100% { transform: translateY(3px); }
+  50% { transform: translateY(-11px); }
+}
+@keyframes atlas-phone-halo {
+  from { opacity: 0.68; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1.06); }
+}
+@keyframes atlas-phone-orbit {
+  to { rotate: 360deg; }
+}
+@keyframes atlas-phone-badge-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+@keyframes atlas-phone-spark {
+  from { opacity: 0.25; scale: 0.7; }
+  to { opacity: 0.95; scale: 1.35; }
+}
+@media (max-width: 950px) and (min-width: 701px) {
+  .atlas-home .atlas-phone-stage { min-height: 500px; height: 60vh; }
+  .atlas-phone-kicker { left: 2%; font-size: 8px; }
+  .atlas-phone-badge { gap: 8px; padding: 10px 11px; }
+  .atlas-phone-badge-top { right: -3%; }
+  .atlas-phone-badge-bottom { left: -3%; }
+}
+@media (max-width: 700px) {
+  .atlas-home .atlas-phone-stage {
+    width: min(100%, 520px);
+    height: clamp(410px, 112vw, 535px);
+    min-height: 410px;
+    justify-self: center;
+    margin: 0 auto;
+  }
+  .atlas-home .atlas-phone-video { width: min(100%, 440px); }
+  .atlas-phone-kicker { top: 1%; left: 1%; font-size: 8px; }
+  .atlas-phone-badge-top { top: 21%; right: -1%; }
+  .atlas-phone-badge-bottom { bottom: 11%; left: -1%; }
+  .atlas-phone-base-label { bottom: 1%; right: 1%; }
+  .atlas-phone-orbit { width: 90%; }
+  .atlas-phone-orbit-two { width: 102%; }
+}
+@media (max-width: 420px) {
+  .atlas-home .atlas-phone-stage { height: 390px; min-height: 390px; }
+  .atlas-phone-badge { padding: 9px 10px; border-radius: 13px; }
+  .atlas-phone-badge strong { font-size: 10px; }
+  .atlas-phone-badge small { font-size: 8px; }
+  .atlas-phone-badge-icon { width: 29px; height: 29px; }
+  .atlas-phone-badge-bottom > svg { width: 15px; }
+  .atlas-phone-base-label { font-size: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-phone-halo,
+  .atlas-phone-orbit,
+  .atlas-phone-video,
+  .atlas-phone-badge,
+  .atlas-phone-sparks i { animation: none !important; }
+}

@@ -529,44 +529,59 @@
 .atlas-faq p {
   font-size: 13px;
 }
-.atlas-faq details {
+.atlas-faq-item {
   border-bottom: 1px solid #dce0d3;
-  padding: 23px 0;
+  padding: 8px 0;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    border-radius 0.3s ease;
 }
-.atlas-faq summary {
+.atlas-faq-item.is-open {
+  margin-inline: -18px;
+  padding-inline: 18px;
+  border-bottom-color: transparent;
+  border-radius: 14px;
+  background: #f0eaf8;
+}
+.atlas-faq-question {
+  width: 100%;
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
   cursor: pointer;
+  text-align: left;
   font-size: 14px;
-  list-style: none;
   font-weight: 500;
 }
-.atlas-faq summary::-webkit-details-marker {
-  display: none;
+.atlas-faq-question:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 4px;
+  border-radius: 5px;
 }
-.atlas-faq summary svg {
-  transition: transform 0.2s;
+.atlas-faq-question svg {
+  flex: none;
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.25s ease;
 }
-.atlas-faq details[open] summary svg {
+.atlas-faq-item.is-open .atlas-faq-question svg {
   transform: rotate(45deg);
+  color: #7547bd;
 }
-.atlas-faq details p {
-  padding-top: 18px;
+.atlas-faq-answer {
+  overflow: hidden;
+}
+.atlas-faq-answer p {
+  padding: 2px 24px 18px 0;
   line-height: 1.8;
   max-width: 500px;
-  animation: atlas-answer 0.25s ease;
-}
-@keyframes atlas-answer {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 .atlas-final {
   max-width: 1248px;
@@ -988,8 +1003,12 @@
     grid-template-columns: 1fr;
     gap: 24px;
   }
-  .atlas-faq details {
-    padding: 20px 0;
+  .atlas-faq-item {
+    padding-block: 8px;
+  }
+  .atlas-faq-item.is-open {
+    margin-inline: -12px;
+    padding-inline: 12px;
   }
   .atlas-final {
     margin: 0 22px 20px;

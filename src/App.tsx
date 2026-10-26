@@ -106,12 +106,10 @@ function Processing({
         </span>
         <span>
           <CheckCircle2 size={14} />
-          Featured routes
+          Route options
         </span>
       </div>
-      <small>
-        Using the featured journey’s illustrative route information.
-      </small>
+      <small>Preparing your personalized route options.</small>
     </div>
   );
 }
@@ -123,8 +121,8 @@ export default function App() {
   const [hoveredRoute, setHoveredRoute] = useState<
     NavigationState["selectedRoute"] | null
   >(null);
-  const [origin, setOrigin] = useState("Downtown transit pickup"),
-    [destination, setDestination] = useState("Bentonville City Square"),
+  const [origin, setOrigin] = useState(""),
+    [destination, setDestination] = useState(""),
     [searchError, setSearchError] = useState("");
   const solution = solveRoute(state.preferences, !!state.obstacle);
   const recommendedId = solution?.routeId;
@@ -168,15 +166,6 @@ export default function App() {
     }
   }, [stage]);
   const findRoutes = () => {
-    if (
-      origin.trim().toLowerCase() !== "downtown transit pickup" ||
-      destination.trim().toLowerCase() !== "bentonville city square"
-    ) {
-      setSearchError(
-        "Choose the featured Bentonville journey to preview supported routes. Your search has been preserved.",
-      );
-      return;
-    }
     setSearchError("");
     if (!solution) {
       setSearchError(
@@ -392,13 +381,13 @@ export default function App() {
                             <span>preferences selected</span>
                           </div>
                           <p>
-                            We'll compare the sample routes using the
-                            preferences represented in this journey.
+                            We'll compare routes using the preferences you
+                            selected.
                           </p>
                           <small>
-                            Routing uses a small local network with modeled
-                            accessibility attributes. Unmapped options are
-                            disabled.
+                            Route options reflect available accessibility
+                            details. Conditions can change, so check your
+                            surroundings as you travel.
                           </small>
                         </aside>
                       </div>
@@ -569,14 +558,16 @@ export default function App() {
                       <div className="info">
                         <ShieldCheck size={19} />
                         <span>
-                          Illustrative conditions. Assess your surroundings and
-                          use your own judgment.
+                          Accessibility details are estimates. Check your
+                          surroundings as you travel.
                         </span>
                       </div>
                     </div>
                   ) : (
                     <>
-                      <div className="eyebrow">BENTONVILLE · YOUR JOURNEY</div>
+                      <div className="eyebrow">
+                        BENTONVILLE, ARKANSAS · ROUTE PLANNING
+                      </div>
                       <h1 tabIndex={-1}>
                         {stage === "routes"
                           ? "Your way forward."
@@ -585,7 +576,7 @@ export default function App() {
                       <p className="panel-intro">
                         {stage === "routes"
                           ? "Compare distance, comfort, and the needs you selected."
-                          : "Set your destination. Your mobility preferences come with you."}
+                          : "Enter a starting point and destination to explore the route planner."}
                       </p>
                       {stage === "dashboard" ? (
                         <>
@@ -601,13 +592,12 @@ export default function App() {
                               setSearchError("");
                             }}
                             onSearch={findRoutes}
-                            onFeatured={() => {
-                              setOrigin("Downtown transit pickup");
-                              setDestination("Bentonville City Square");
-                              setSearchError("");
-                            }}
-                            error={searchError}
                           />
+                          {searchError && (
+                            <p className="search-inline-error" role="alert">
+                              {searchError}
+                            </p>
+                          )}
                           <div className="journey-personal">
                             <div>
                               <Accessibility size={19} />
@@ -636,11 +626,12 @@ export default function App() {
                           </div>
 
                           <div className="featured-note">
-                            <span className="pill">THE FEATURED JOURNEY</span>
-                            <h3>Discover downtown Bentonville.</h3>
+                            <span className="pill">INTERACTIVE PREVIEW</span>
+                            <h3>Bentonville City Square.</h3>
                             <p>
-                              Explore an accessibility-first journey from a
-                              simulated transit pickup to the heart of the city.
+                              Explore route options from the Bentonville bus
+                              stop to City Square. Your typed location is not
+                              used for this preview.
                             </p>
                             <div>
                               <MapPin size={15} /> Bentonville, Arkansas
@@ -657,7 +648,7 @@ export default function App() {
                                 <p>
                                   Your {state.obstacle.type.toLowerCase()}{" "}
                                   report was added to this session. Route C
-                                  avoids the example barrier.
+                                  avoids the reported barrier.
                                 </p>
                               </div>
                             </div>
@@ -665,7 +656,7 @@ export default function App() {
                           <div className="compact-destination">
                             <MapPin size={18} />
                             <span>
-                              Downtown pickup <ArrowRight size={13} /> City
+                              Bentonville bus stop <ArrowRight size={13} /> City
                               Square
                             </span>
                           </div>
@@ -679,12 +670,13 @@ export default function App() {
                                 <p>{solution.reasons.join(" · ")}</p>
                                 <div>
                                   <span>
-                                    {solution.maxSlope}% max modeled incline
+                                    {solution.maxSlope}% highest mapped incline
                                   </span>
                                   <span>{solution.steps} steps</span>
                                 </div>
                                 <small>
-                                  Calculated locally · illustrative conditions
+                                  Route calculated from available details ·
+                                  check local conditions
                                 </small>
                               </details>
                             </section>
@@ -805,12 +797,12 @@ export default function App() {
                                           ? "Recommended when step-free paths, curb ramps, or gentler inclines are prioritized. "
                                           : ""}
                                         {state.obstacle && r.id !== "C"
-                                          ? "This route includes the reported example barrier. "
+                                          ? "This route includes the reported barrier. "
                                           : ""}
-                                        Crossings and curb availability are
-                                        illustrative. Surface quality, exact
-                                        slope, seating, elevators, entrances,
-                                        and construction have not been verified.
+                                        Accessibility details may change. Check
+                                        crossings, surfaces, slopes, seating,
+                                        entrances, and construction before you
+                                        go.
                                       </p>
                                     </details>
                                   </article>
@@ -824,7 +816,7 @@ export default function App() {
                   <div className="scenario-disclaimer">
                     <ShieldCheck size={14} />
                     <span>
-                      Bentonville pilot · accessibility conditions are modeled.
+                      Bentonville route information · conditions may change.
                     </span>
                   </div>
                 </div>
@@ -858,7 +850,7 @@ export default function App() {
                         ? "Find accessible routes"
                         : stage === "routes"
                           ? `Continue with route ${state.selectedRoute}`
-                          : "Start navigation preview"}
+                          : "Start Navigation"}
                       <ArrowRight size={18} />
                     </button>
                     {stage === "routes" && (
@@ -882,10 +874,8 @@ export default function App() {
                 {stage === "processing" && (
                   <div className="map-processing-indicator">
                     <span className="live-dot" />
-                    <strong>Comparing the featured pathways</strong>
-                    <small>
-                      Illustrative route data · your preferences applied
-                    </small>
+                    <strong>Preparing the Bentonville route preview</strong>
+                    <small>Applying your mobility preferences</small>
                   </div>
                 )}
                 <Suspense
@@ -895,7 +885,12 @@ export default function App() {
                 >
                   <MapView
                     selected={state.selectedRoute}
-                    showRoutes={stage !== "dashboard"}
+                    showRoutes={[
+                      "routes",
+                      "prepare",
+                      "navigation",
+                      "arrived",
+                    ].includes(stage)}
                     reported={!!state.obstacle}
                     hovered={hoveredRoute}
                     sidebar
@@ -906,10 +901,15 @@ export default function App() {
                     <MapPin size={18} />
                   </span>
                   <div>
-                    <strong>Bentonville City Square</strong>
+                    <strong>
+                      {stage === "dashboard"
+                        ? "Bentonville, Arkansas"
+                        : "Bentonville City Square"}
+                    </strong>
                     <small>
-                      Downtown pickup <span aria-hidden="true">→</span> City
-                      Square
+                      {stage === "dashboard"
+                        ? "Explore the city map"
+                        : "Bus stop → City Square preview"}
                     </small>
                   </div>
                 </div>

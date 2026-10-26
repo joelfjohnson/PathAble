@@ -328,15 +328,15 @@ export default function ARSceneRenderer({
       <div className="ar-media-label">
         <strong>
           {failed
-            ? "Illustrative scene · media unavailable"
+            ? "Navigation scene · media unavailable"
             : scene.media.isReference
               ? `Bentonville · ${scene.locationLabel}`
-              : `Illustrative viewpoint · ${scene.locationLabel}`}
+              : `PathAble route view · ${scene.locationLabel}`}
         </strong>
         <span>
           {failed
-            ? "The walkthrough continues with a neutral visual."
-            : "Historical imagery · simulated navigation"}
+            ? "Navigation continues with a neutral visual."
+            : "Recorded Bentonville imagery · GPS tracking off"}
         </span>
       </div>
     </div>
